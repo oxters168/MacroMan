@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\VK.cs" />
+    <Compile Include="Enums\WM.cs" />
+    <Compile Include="ExternAPI.cs" />
     <Compile Include="KeyboardHook.cs" />
     <Compile Include="MacroForm.cs">
       <SubType>Form</SubType>
