@@ -14,17 +14,18 @@ namespace BlenderGISMacro
 {
     public partial class MacroForm : Form
     {
-        private List<VK> keysDown = new List<VK>();
+        private List<VirtualKey> keysDown = new List<VirtualKey>();
         private CancellationTokenSource backgroundProcess;
         private double startTime = 0;
         private double currentTime = 0;
+        private const int milliDelay = 10;
 
         public MacroForm()
         {
             InitializeComponent();
-            KeyboardHook.CreateHook();
-            KeyboardHook.onKeyDown += KeyboardHook_onKeyDown;
-            KeyboardHook.onKeyUp += KeyboardHook_onKeyUp;
+            //Hooker.CreateHook();
+            //Hooker.onKeyDown += KeyboardHook_onKeyDown;
+            //Hooker.onKeyUp += KeyboardHook_onKeyUp;
 
             backgroundProcess = new CancellationTokenSource();
             FrameRunner(backgroundProcess.Token);
@@ -34,7 +35,7 @@ namespace BlenderGISMacro
 
         private void MacroForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            KeyboardHook.DestroyHook();
+            //Hooker.DestroyHook();
             backgroundProcess.Cancel();
         }
 
@@ -47,25 +48,27 @@ namespace BlenderGISMacro
             MoveMouseWithButtons();
 
             //ExternAPI.PostMessage(Process.GetCurrentProcess().MainWindowHandle, (uint)WM.KEYDOWN, (int)VK.A, 0);
+            if (KeyboardOperations.IsKeyPressed(VirtualKey.LCONTROL) && KeyboardOperations.IsKeyPressed(VirtualKey.LSHIFT))
+                KeyboardOperations.SetToggleState(VirtualKey.CAPITAL, true);
         }
 
         private void MoveMouseWithButtons()
         {
             var currentMousePosition = MouseOperations.GetCursorPosition();
             int xOffset = 0, yOffset = 0;
-            if (keysDown.Contains(VK.DOWN))
+            if (KeyboardOperations.IsKeyPressed(VirtualKey.DOWN))
                 yOffset = 10;
-            if (keysDown.Contains(VK.UP))
+            if (KeyboardOperations.IsKeyPressed(VirtualKey.UP))
                 yOffset = -10;
-            if (keysDown.Contains(VK.LEFT))
+            if (KeyboardOperations.IsKeyPressed(VirtualKey.LEFT))
                 xOffset = -10;
-            if (keysDown.Contains(VK.RIGHT))
+            if (KeyboardOperations.IsKeyPressed(VirtualKey.RIGHT))
                 xOffset = 10;
             if (xOffset != 0 || yOffset != 0)
                 MouseOperations.SetCursorPosition(new MouseOperations.MousePoint() { X = currentMousePosition.X + xOffset, Y = currentMousePosition.Y + yOffset });
         }
 
-        private static string ToComboString(List<VK> keys)
+        private static string ToComboString(List<VirtualKey> keys)
         {
             string currentCombo = "";
             for (int i = 0; i < keys.Count; i++)
@@ -85,15 +88,15 @@ namespace BlenderGISMacro
                 if (cancellationToken.IsCancellationRequested)
                     break;
 
-                await Task.Delay(10);
+                await Task.Delay(milliDelay);
             }
         }
-        private void KeyboardHook_onKeyDown(VK key)
+        private void KeyboardHook_onKeyDown(VirtualKey key)
         {
             if (!keysDown.Contains(key))
                 keysDown.Add(key);
         }
-        private void KeyboardHook_onKeyUp(VK key)
+        private void KeyboardHook_onKeyUp(VirtualKey key)
         {
             keysDown.Remove(key);
         }
@@ -120,9 +123,6 @@ namespace BlenderGISMacro
         private void comboBox1_DropDown(object sender, EventArgs e)
         {
             //Applications
-
-            //comboBox1.Items.Clear();
-            //comboBox1.Items.AddRange(Process.GetProcesses().Distinct(new ProcessMainHandlerComparer()).Select(process => process.Id + " " + process.ProcessName + " " + process.MainWindowTitle).ToArray());
             comboBox1.DataSource = Process.GetProcesses().Distinct(new ProcessMainHandlerComparer()).ToList();
             comboBox1.DisplayMember = "ProcessName";
         }
@@ -152,6 +152,23 @@ namespace BlenderGISMacro
             {
                 return obj.MainWindowHandle.GetHashCode();
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (comboBox3.SelectedItem != null)
+            {
+                var handle = ((Process)comboBox3.SelectedItem).MainWindowHandle;
+
+                ExternAPI.ShowWindow(handle, (int)ShowWindowCmd.SHOW);
+
+                ExternAPI.SetForegroundWindow(handle);
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            KeyboardOperations.KeyPress(VirtualKey.CAPITAL);
         }
     }
 }

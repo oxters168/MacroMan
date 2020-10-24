@@ -46,10 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\VK.cs" />
-    <Compile Include="Enums\WM.cs" />
+    <Compile Include="Enums\KeyEventF.cs" />
+    <Compile Include="Enums\ShowWindowCmd.cs" />
+    <Compile Include="Enums\VirtualKey.cs" />
+    <Compile Include="Enums\WindowsHook.cs" />
+    <Compile Include="Enums\WindowsMessage.cs" />
     <Compile Include="ExternAPI.cs" />
-    <Compile Include="KeyboardHook.cs" />
+    <Compile Include="Hooker.cs" />
+    <Compile Include="KeyboardOperations.cs" />
     <Compile Include="MacroForm.cs">
       <SubType>Form</SubType>
     </Compile>
