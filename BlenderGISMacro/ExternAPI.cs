@@ -53,5 +53,14 @@ namespace BlenderGISMacro
 
         [DllImport("user32.dll")]
         public static extern short GetKeyState(int nVirtKey);
+
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetWindowPlacement(IntPtr hWnd, ref WindowOperations.WindowPlacement lpwndpl);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetWindowPlacement(IntPtr hWnd, [In] ref WindowOperations.WindowPlacement lpwndpl);
     }
 }

@@ -159,16 +159,73 @@ namespace BlenderGISMacro
             if (comboBox3.SelectedItem != null)
             {
                 var handle = ((Process)comboBox3.SelectedItem).MainWindowHandle;
-
-                ExternAPI.ShowWindow(handle, (int)ShowWindowCmd.SHOW);
-
-                ExternAPI.SetForegroundWindow(handle);
+                WindowOperations.BringToFront(handle);
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             KeyboardOperations.KeyPress(VirtualKey.CAPITAL);
+        }
+
+        private void minimizeBtn_Click(object sender, EventArgs e)
+        {
+            if (comboBox3.SelectedItem != null)
+            {
+                var handle = ((Process)comboBox3.SelectedItem).MainWindowHandle;
+                WindowOperations.Minimize(handle);
+            }
+        }
+
+        private void maximizeBtn_Click(object sender, EventArgs e)
+        {
+            if (comboBox3.SelectedItem != null)
+            {
+                var handle = ((Process)comboBox3.SelectedItem).MainWindowHandle;
+                WindowOperations.ShowMaximized(handle);
+            }
+        }
+
+        private void unminimizeBtn_Click(object sender, EventArgs e)
+        {
+            if (comboBox3.SelectedItem != null)
+            {
+                var handle = ((Process)comboBox3.SelectedItem).MainWindowHandle;
+                WindowOperations.Unminimize(handle);
+            }
+        }
+
+        private void unmaximizeBtn_Click(object sender, EventArgs e)
+        {
+            if (comboBox3.SelectedItem != null)
+            {
+                var handle = ((Process)comboBox3.SelectedItem).MainWindowHandle;
+                WindowOperations.ShowNormal(handle);
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (comboBox3.SelectedItem != null)
+            {
+                var handle = ((Process)comboBox3.SelectedItem).MainWindowHandle;
+
+                int x = 0;
+                int y = 0;
+                int width = 0;
+                int height = 0;
+                try
+                {
+                    x = Convert.ToInt32(textBox1.Text);
+                    y = Convert.ToInt32(textBox2.Text);
+                    width = Convert.ToInt32(textBox3.Text);
+                    height = Convert.ToInt32(textBox4.Text);
+                }
+                catch (Exception) { }
+
+                WindowOperations.SetRect(handle, new Rectangle() { X = x, Y = y, Width = width, Height = height });
+            }
+
         }
     }
 }

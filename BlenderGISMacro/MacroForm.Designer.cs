@@ -41,13 +41,24 @@
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.minimizeBtn = new System.Windows.Forms.Button();
+            this.maximizeBtn = new System.Windows.Forms.Button();
+            this.unminimizeBtn = new System.Windows.Forms.Button();
+            this.unmaximizeBtn = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // notifyIcon1
             // 
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
-            this.notifyIcon1.Text = "Blender GIS Macro";
+            this.notifyIcon1.Text = "Macro Man";
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             // 
             // label1
@@ -63,7 +74,7 @@
             // 
             this.textBox1.Location = new System.Drawing.Point(12, 39);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.Size = new System.Drawing.Size(32, 20);
             this.textBox1.TabIndex = 1;
             // 
             // comboBox1
@@ -140,19 +151,119 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // treeView1
+            // flowLayoutPanel1
             // 
-            this.treeView1.Location = new System.Drawing.Point(191, 12);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(169, 295);
-            this.treeView1.TabIndex = 11;
+            this.flowLayoutPanel1.Controls.Add(this.listBox1);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(204, 12);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(136, 295);
+            this.flowLayoutPanel1.TabIndex = 12;
+            // 
+            // vScrollBar1
+            // 
+            this.vScrollBar1.Location = new System.Drawing.Point(343, 12);
+            this.vScrollBar1.Name = "vScrollBar1";
+            this.vScrollBar1.Size = new System.Drawing.Size(17, 295);
+            this.vScrollBar1.TabIndex = 13;
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Items.AddRange(new object[] {
+            "item1",
+            "item2",
+            "item3"});
+            this.listBox1.Location = new System.Drawing.Point(3, 3);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(120, 95);
+            this.listBox1.TabIndex = 15;
+            // 
+            // minimizeBtn
+            // 
+            this.minimizeBtn.Location = new System.Drawing.Point(12, 255);
+            this.minimizeBtn.Name = "minimizeBtn";
+            this.minimizeBtn.Size = new System.Drawing.Size(75, 23);
+            this.minimizeBtn.TabIndex = 14;
+            this.minimizeBtn.Text = "Minimize";
+            this.minimizeBtn.UseVisualStyleBackColor = true;
+            this.minimizeBtn.Click += new System.EventHandler(this.minimizeBtn_Click);
+            // 
+            // maximizeBtn
+            // 
+            this.maximizeBtn.Location = new System.Drawing.Point(12, 284);
+            this.maximizeBtn.Name = "maximizeBtn";
+            this.maximizeBtn.Size = new System.Drawing.Size(75, 23);
+            this.maximizeBtn.TabIndex = 15;
+            this.maximizeBtn.Text = "Maximize";
+            this.maximizeBtn.UseVisualStyleBackColor = true;
+            this.maximizeBtn.Click += new System.EventHandler(this.maximizeBtn_Click);
+            // 
+            // unminimizeBtn
+            // 
+            this.unminimizeBtn.Location = new System.Drawing.Point(93, 255);
+            this.unminimizeBtn.Name = "unminimizeBtn";
+            this.unminimizeBtn.Size = new System.Drawing.Size(75, 23);
+            this.unminimizeBtn.TabIndex = 16;
+            this.unminimizeBtn.Text = "Unminimize";
+            this.unminimizeBtn.UseVisualStyleBackColor = true;
+            this.unminimizeBtn.Click += new System.EventHandler(this.unminimizeBtn_Click);
+            // 
+            // unmaximizeBtn
+            // 
+            this.unmaximizeBtn.Location = new System.Drawing.Point(93, 284);
+            this.unmaximizeBtn.Name = "unmaximizeBtn";
+            this.unmaximizeBtn.Size = new System.Drawing.Size(75, 23);
+            this.unmaximizeBtn.TabIndex = 17;
+            this.unmaximizeBtn.Text = "Unmaximize";
+            this.unmaximizeBtn.UseVisualStyleBackColor = true;
+            this.unmaximizeBtn.Click += new System.EventHandler(this.unmaximizeBtn_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(50, 39);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(32, 20);
+            this.textBox2.TabIndex = 18;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(93, 39);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 19;
+            this.button3.Text = "Set Rect";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(12, 65);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(32, 20);
+            this.textBox3.TabIndex = 20;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(50, 65);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(32, 20);
+            this.textBox4.TabIndex = 21;
             // 
             // MacroForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(372, 347);
-            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.textBox4);
+            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.unmaximizeBtn);
+            this.Controls.Add(this.unminimizeBtn);
+            this.Controls.Add(this.maximizeBtn);
+            this.Controls.Add(this.minimizeBtn);
+            this.Controls.Add(this.vScrollBar1);
+            this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label4);
@@ -165,9 +276,10 @@
             this.Controls.Add(this.label1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MacroForm";
-            this.Text = "Blender GIS Macro";
+            this.Text = "Macro Man";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MacroForm_FormClosing);
             this.Resize += new System.EventHandler(this.MacroForm_Resize);
+            this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -186,7 +298,17 @@
         private System.Windows.Forms.ComboBox comboBox3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.VScrollBar vScrollBar1;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Button minimizeBtn;
+        private System.Windows.Forms.Button maximizeBtn;
+        private System.Windows.Forms.Button unminimizeBtn;
+        private System.Windows.Forms.Button unmaximizeBtn;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox textBox4;
     }
 }
 
