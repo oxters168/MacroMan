@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MacroMan.MacroActions
@@ -13,6 +14,7 @@ namespace MacroMan.MacroActions
         //Timed actions
         //etc...
 
+        public string name;
         private int uniqueId;
         private static int totalId;
         private static List<MacroType> cachedMacros = new List<MacroType>();
@@ -23,17 +25,64 @@ namespace MacroMan.MacroActions
             cachedMacros.Add(this);
         }
 
+        public static MacroType GetMacro(int id)
+        {
+            return cachedMacros.FirstOrDefault(macro => macro.uniqueId == id);
+        }
+        public static MacroType GetMacro(string key)
+        {
+            return cachedMacros.FirstOrDefault(macro => macro.name.Equals(key));
+        }
+
+        internal static MacroType TryGetMacro(string key, int id)
+        {
+            MacroType macro = null;
+            if (!string.IsNullOrEmpty(key))
+                macro = MacroType.GetMacro(key);
+            else if (id >= 0)
+                macro = MacroType.GetMacro(id);
+            return macro;
+        }
+
         public int GetId() { return uniqueId;  } //Every macro action should have a unique id
-        public abstract Dictionary<int, string> GetActions();
         public abstract void SetAction(int actionId);
         public abstract int GetAction();
-        public abstract Dictionary<int, string> GetProperties();
         public abstract void SetPropertyValue(int propertyId, object value);
-        internal abstract MacroProperty GetProperty(int propertyId);
-        public abstract object GetPropertyValue(int propertyId);
-        public abstract int GetPropertyType(int propertyId); //Will be used to determine whether the input of the property is a number, string, boolean, or dropdown
-        public abstract bool IsPropertyReadOnly(int propertyId); //An output property can be used as input in other actions
+        public abstract void SetPropertyValue(string propertyKey, object value);
+        internal abstract void TrySetPropertyValue(string propertyKey, int propertyId, object value);
+        public abstract MacroProperty GetProperty(int propertyId);
+        public abstract MacroProperty GetProperty(string propertyKey);
+        internal abstract MacroProperty TryGetProperty(string propertyKey, int propertyId);
         public abstract Task<int> Execute(); //The return value can be used to give feedback on the executed action
+
+        public static Array GetProperties(Macro macroType)
+        {
+            Array properties = null;
+            switch (macroType)
+            {
+                case Macro.Keyboard:
+                    properties = KeyboardMacro.GetProperties();
+                    break;
+                case Macro.Integer:
+                    properties = IntegerMacro.GetProperties();
+                    break;
+            }
+            return properties;
+        }
+        public static Array GetActions(Macro macroType)
+        {
+            Array actions = null;
+            switch (macroType)
+            {
+                case Macro.Keyboard:
+                    actions = KeyboardMacro.GetActions();
+                    break;
+                case Macro.Integer:
+                    actions = IntegerMacro.GetActions();
+                    break;
+            }
+            return actions;
+        }
 
         /// <summary>
         /// Source: https://www.dotnetperls.com/uppercase-first-letter

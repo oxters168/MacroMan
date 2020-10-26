@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MacroActions\Enums\DataSource.cs" />
+    <Compile Include="MacroActions\Enums\Macro.cs" />
     <Compile Include="MacroActions\Enums\PropertyType.cs" />
     <Compile Include="MacroActions\IntegerValue.cs" />
     <Compile Include="MacroActions\StringedValue.cs" />

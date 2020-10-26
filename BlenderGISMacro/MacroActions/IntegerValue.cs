@@ -4,8 +4,8 @@
     {
         public int value { get { return _value; } set { set = true; _value = value; } }
         private int _value;
-        public string name;
-        public bool IsSet { get { return set; } }
-        private bool set;
+        public string name { get { return _name; } set { set = true; _name = value; } }
+        private string _name;
+        public bool set { get; private set; }
     }
 }

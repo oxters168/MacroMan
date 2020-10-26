@@ -7,9 +7,6 @@ namespace MacroMan.MacroActions
 {
     public class IntegerMacro : MacroType
     {
-        // Available actions include key down, key up, key press, toggle key, is key down, is key up, is key toggled
-        // Available properties include virtual key code
-
         /// <summary>
         /// This enum is used to identify the action this macro will do
         /// We can create an array of actions if we want for this enum,
@@ -38,6 +35,15 @@ namespace MacroMan.MacroActions
             second_source_id = 6,
             result_source = 7,
             result_source_id = 8,
+            first_source_key = 9,
+            first_source_macro_id = 10,
+            first_source_macro_key = 11,
+            second_source_key = 12,
+            second_source_macro_id = 13,
+            second_source_macro_key = 14,
+            result_source_key = 15,
+            result_source_macro_id = 16,
+            result_source_macro_key = 17,
         }
 
         public string errorMessage { get; private set; }
@@ -70,23 +76,145 @@ namespace MacroMan.MacroActions
                 value = 0,
                 readOnly = true,
             },
+            new MacroProperty()
+            {
+                name = IntegerProperties.first_source_id.ToString(),
+                id = (int)IntegerProperties.first_source_id,
+                type = PropertyType.integer,
+                value = 0,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.first_source_key.ToString(),
+                id = (int)IntegerProperties.first_source_key,
+                type = PropertyType.stringed_value,
+                value = null,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.first_source_macro_id.ToString(),
+                id = (int)IntegerProperties.first_source_macro_id,
+                type = PropertyType.integer,
+                value = -1,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.first_source_macro_key.ToString(),
+                id = (int)IntegerProperties.first_source_macro_key,
+                type = PropertyType.stringed_value,
+                value = null,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.second_source_id.ToString(),
+                id = (int)IntegerProperties.second_source_id,
+                type = PropertyType.integer,
+                value = -1,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.second_source_key.ToString(),
+                id = (int)IntegerProperties.second_source_key,
+                type = PropertyType.stringed_value,
+                value = null,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.second_source_macro_id.ToString(),
+                id = (int)IntegerProperties.second_source_macro_id,
+                type = PropertyType.integer,
+                value = -1,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.second_source_macro_key.ToString(),
+                id = (int)IntegerProperties.second_source_macro_key,
+                type = PropertyType.stringed_value,
+                value = null,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.result_source_id.ToString(),
+                id = (int)IntegerProperties.result_source_id,
+                type = PropertyType.integer,
+                value = -1,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.result_source_key.ToString(),
+                id = (int)IntegerProperties.result_source_key,
+                type = PropertyType.stringed_value,
+                value = null,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.result_source_macro_id.ToString(),
+                id = (int)IntegerProperties.result_source_macro_id,
+                type = PropertyType.integer,
+                value = -1,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.result_source_macro_key.ToString(),
+                id = (int)IntegerProperties.result_source_macro_key,
+                type = PropertyType.integer,
+                value = null,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.first_source.ToString(),
+                id = (int)IntegerProperties.first_source,
+                type = PropertyType.integer,
+                value = 0,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.second_source.ToString(),
+                id = (int)IntegerProperties.second_source,
+                type = PropertyType.integer,
+                value = 0,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = IntegerProperties.result_source.ToString(),
+                id = (int)IntegerProperties.result_source,
+                type = PropertyType.integer,
+                value = 0,
+                readOnly = false,
+            },
         };
 
-        //public KeyboardMacro()
-        //{
-        //    int propertyCount = Enum.GetValues(typeof(KeyboardProperties)).Length;
-        //    properties = new object[propertyCount];
-        //}
-
-        public override Dictionary<int, string> GetProperties()
+        /*public static Dictionary<int, string> GetProperties()
         {
-            //return EnumToDictionary(typeof(KeyboardProperties));
-            return PropsToDictionary(properties);
+            return EnumToDictionary(typeof(IntegerProperties));
         }
-        public override Dictionary<int, string> GetActions()
+        public static Dictionary<int, string> GetActions()
         {
             return EnumToDictionary(typeof(IntegerAction));
+        }*/
+        public static Array GetProperties()
+        {
+            return Enum.GetValues(typeof(IntegerProperties));
         }
+        public static Array GetActions()
+        {
+            return Enum.GetValues(typeof(IntegerAction));
+        }
+
         public override void SetAction(int actionId)
         {
             executedAction = (IntegerAction)actionId;
@@ -95,16 +223,20 @@ namespace MacroMan.MacroActions
         {
             return (int)executedAction;
         }
-        internal override MacroProperty GetProperty(int propertyId)
+        public override MacroProperty GetProperty(int propertyId)
         {
             return properties.First(property => property.id == propertyId);
         }
+        public override MacroProperty GetProperty(string propertyKey)
+        {
+            return properties.First(property => property.name.Equals(propertyKey));
+        }
+        internal override MacroProperty TryGetProperty(string propertyKey, int propertyId)
+        {
+            return properties.First(property => (!string.IsNullOrEmpty(propertyKey) && property.name.Equals(propertyKey)) || (propertyId >= 0 && property.id == propertyId));
+        }
         public override void SetPropertyValue(int propertyId, object value)
         {
-            //properties[propertyId] = value;
-            //GetProperty(propertyId).value = value;
-
-            //Since MacroProperty is a struct
             for (int i = 0; i < properties.Length; i++)
             {
                 if (properties[i].id == propertyId)
@@ -114,49 +246,99 @@ namespace MacroMan.MacroActions
                 }
             }
         }
-        public override object GetPropertyValue(int propertyId)
+        public override void SetPropertyValue(string propertyKey, object value)
         {
-            return GetProperty(propertyId).value;
+            for (int i = 0; i < properties.Length; i++)
+            {
+                if (properties[i].name.Equals(propertyKey))
+                {
+                    properties[i].value = value;
+                    break;
+                }
+            }
         }
-        public override int GetPropertyType(int propertyId)
+        internal override void TrySetPropertyValue(string propertyKey, int propertyId, object value)
         {
-            return (int)GetProperty(propertyId).type;
+            if (!string.IsNullOrEmpty(propertyKey))
+                SetPropertyValue(propertyKey, value);
+            else if (propertyId >= 0)
+                SetPropertyValue(propertyId, value);
+            else
+                throw new KeyNotFoundException();
         }
-        public override bool IsPropertyReadOnly(int propertyId)
-        {
-            return GetProperty(propertyId).readOnly;
-        }
-        public override async Task<int> Execute()
+        public override Task<int> Execute()
         {
             error = 0;
             errorMessage = null;
             try
             {
-                var firstSource = (DataSource)GetPropertyValue((int)IntegerProperties.first_source);
-                int firstSourceId = (int)GetPropertyValue((int)IntegerProperties.first_source_id);
-                var secondSource = (DataSource)GetPropertyValue((int)IntegerProperties.second_source);
-                int secondSourceId = (int)GetPropertyValue((int)IntegerProperties.first_source_id);
-                var resultSource = (DataSource)GetPropertyValue((int)IntegerProperties.result_source);
-                int resultSourceId = (int)GetPropertyValue((int)IntegerProperties.first_source_id);
+                var firstSource = (DataSource)GetProperty((int)IntegerProperties.first_source).value;
+                var secondSource = (DataSource)GetProperty((int)IntegerProperties.second_source).value;
+                var resultSource = (DataSource)GetProperty((int)IntegerProperties.result_source).value;
+                int firstSourceId = (int)GetProperty((int)IntegerProperties.first_source_id).value;
+                int secondSourceId = (int)GetProperty((int)IntegerProperties.first_source_id).value;
+                int resultSourceId = (int)GetProperty((int)IntegerProperties.first_source_id).value;
+                int firstSourceMacroId = (int)GetProperty((int)IntegerProperties.first_source_macro_id).value;
+                int secondSourceMacroId = (int)GetProperty((int)IntegerProperties.second_source_macro_id).value;
+                int resultSourceMacroId = (int)GetProperty((int)IntegerProperties.result_source_macro_id).value;
 
-                switch ((IntegerAction)executedAction)
+                string firstSourceKey = (string)GetProperty((int)IntegerProperties.first_source_key).value;
+                string secondSourceKey = (string)GetProperty((int)IntegerProperties.second_source_key).value;
+                string resultSourceKey = (string)GetProperty((int)IntegerProperties.result_source_key).value;
+                string firstSourceMacroKey = (string)GetProperty((int)IntegerProperties.first_source_macro_key).value;
+                string secondSourceMacroKey = (string)GetProperty((int)IntegerProperties.second_source_macro_key).value;
+                string resultSourceMacroKey = (string)GetProperty((int)IntegerProperties.result_source_macro_key).value;
+
+                MacroType firstMacroSource = TryGetMacro(firstSourceMacroKey, firstSourceMacroId);
+                MacroType secondMacroSource = TryGetMacro(secondSourceMacroKey, firstSourceMacroId);
+                MacroType resultMacroSource = TryGetMacro(resultSourceMacroKey, firstSourceMacroId);
+
+                int firstValue = 0;
+                if ((firstSource & DataSource.self) != 0)
+                    firstValue = (int)TryGetProperty(firstSourceKey, firstSourceId).value;
+                else if ((firstSource & DataSource.macro) != 0)
+                    firstValue = Convert.ToInt32(firstMacroSource.TryGetProperty(firstSourceKey, firstSourceId).value);
+                else if ((firstSource & DataSource.database) != 0)
+                    firstValue = ValuesDatabase.TryGetInteger(firstSourceKey, firstSourceId);
+
+                int secondValue = 0;
+                if ((secondSource & DataSource.self) != 0)
+                    secondValue = (int)TryGetProperty(secondSourceKey, secondSourceId).value;
+                else if ((secondSource & DataSource.macro) != 0)
+                    secondValue = Convert.ToInt32(secondMacroSource.TryGetProperty(secondSourceKey, secondSourceId).value);
+                else if ((secondSource & DataSource.database) != 0)
+                    secondValue = ValuesDatabase.TryGetInteger(secondSourceKey, secondSourceId);
+
+                int resultValue = 0;
+                switch (executedAction)
                 {
                     case IntegerAction.add:
-                        SetPropertyValue((int)IntegerProperties.result_value, (int)GetPropertyValue((int)IntegerProperties.first_value) + (int)GetPropertyValue((int)IntegerProperties.second_value));
+                        resultValue = firstValue + secondValue;
                         break;
                     case IntegerAction.subtract:
+                        resultValue = firstValue - secondValue;
                         break;
                     case IntegerAction.multiply:
+                        resultValue = firstValue * secondValue;
                         break;
                     case IntegerAction.divide:
+                        resultValue = firstValue / secondValue;
                         break;
                     case IntegerAction.modulo:
+                        resultValue = firstValue % secondValue;
                         break;
                 }
+
+                if ((resultSource & DataSource.self) != 0)
+                    TrySetPropertyValue(resultSourceKey, resultSourceId, resultValue);
+                if ((resultSource & DataSource.macro) != 0)
+                    resultMacroSource.TrySetPropertyValue(resultSourceKey, resultSourceId, resultValue);
+                if ((resultSource & DataSource.database) != 0)
+                    ValuesDatabase.TrySetInteger(resultSourceKey, resultSourceId, resultValue);
             }
             catch (Exception e) { error = 1; errorMessage = e.ToString(); }
 
-            return error;
+            return Task.FromResult(error);
         }
     }
 }

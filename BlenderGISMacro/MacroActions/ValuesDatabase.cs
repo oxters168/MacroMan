@@ -1,61 +1,147 @@
 ﻿using System.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace MacroMan.MacroActions
 {
     public class ValuesDatabase
     {
-        private static IntegerValue[] integers = new IntegerValue[10];
-        private static StringedValue[] stringedValues = new StringedValue[10];
-        //private static Dictionary<string, int> integers = new Dictionary<string, int>();
-        //private static Dictionary<string, string> stringedValues = new Dictionary<string, string>();
+        private static List<IntegerValue> integers = new List<IntegerValue>();
+        private static List<StringedValue> stringedValues = new List<StringedValue>();
+
+        private static void ExtendIfOutOfRange(int id)
+        {
+            if (id >= integers.Count)
+                integers.AddRange(new IntegerValue[(id + 1) - integers.Count]);
+        }
 
         public static void SetInteger(string key, int value)
         {
-            int freeIndex = -1;
+            int currentCount = integers.Count;
+            int freeIndex = currentCount;
             bool done = false;
-            for (int i = 0; i < integers.Length; i++)
+            for (int i = 0; i < currentCount; i++)
             {
-                if (freeIndex < 0 && !integers[i].IsSet)
+                if (freeIndex >= currentCount && !integers[i].set)
                     freeIndex = i;
 
                 if (integers[i].name.Equals(key))
                 {
                     done = true;
-                    integers[i].value = value;
+                    SetInteger(i, value);
                     break;
                 }
             }
-            if (!done)
-            {
-                if (freeIndex < 0)
-                {
-                    freeIndex = integers.Length;
-                    IntegerValue[] temp = integers;
-                    integers = new IntegerValue[freeIndex + 10];
-                    for (int i = 0; i < freeIndex; i++)
-                        integers[i] = temp[i];
-                }
 
-                integers[freeIndex].value = value;
-            }
+            if (!done)
+                SetInteger(freeIndex, value, key);
+        }
+        public static void SetInteger(int id, int value, string key = null)
+        {
+            if (id < 0)
+                throw new IndexOutOfRangeException();
+
+            ExtendIfOutOfRange(id);
+
+            var current = integers[id];
+            if (!string.IsNullOrEmpty(key))
+                current.name = key;
+            current.value = value;
+            integers[id] = current;
+        }
+        internal static void TrySetInteger(string key, int id, int value)
+        {
+            if (!string.IsNullOrEmpty(key))
+                SetInteger(key, value);
+            else if (id >= 0)
+                SetInteger(id, value);
+            else
+                throw new KeyNotFoundException();
         }
         public static int GetInteger(string key)
         {
             return integers.First(integer => integer.name.Equals(key)).value;
         }
-
-        /*public static void SetString(string key, string value)
+        public static int GetInteger(int id)
         {
-            stringedValues[key] = value;
+            if (id < 0)
+                throw new IndexOutOfRangeException();
+
+            ExtendIfOutOfRange(id);
+            return integers[id].value;
+        }
+        internal static int TryGetInteger(string key, int id)
+        {
+            int value;
+            if (!string.IsNullOrEmpty(key))
+                value = GetInteger(key);
+            else
+                value = GetInteger(id);
+            return value;
+        }
+
+        public static void SetString(string key, string value)
+        {
+            int currentCount = stringedValues.Count;
+            int freeIndex = currentCount;
+            bool done = false;
+            for (int i = 0; i < currentCount; i++)
+            {
+                if (freeIndex >= currentCount && !stringedValues[i].set)
+                    freeIndex = i;
+
+                if (stringedValues[i].name.Equals(key))
+                {
+                    done = true;
+                    SetString(i, value);
+                    break;
+                }
+            }
+            if (!done)
+                SetString(freeIndex, value, key);
+        }
+        public static void SetString(int id, string value, string key = null)
+        {
+            if (id < 0)
+                throw new IndexOutOfRangeException();
+
+            ExtendIfOutOfRange(id);
+
+            var current = stringedValues[id];
+            if (!string.IsNullOrEmpty(key))
+                current.name = key;
+            current.value = value;
+            stringedValues[id] = current;
+        }
+        internal static void TrySetString(string key, int id, string value)
+        {
+            if (!string.IsNullOrEmpty(key))
+                SetString(key, value);
+            else if (id >= 0)
+                SetString(id, value);
+            else
+                throw new KeyNotFoundException();
         }
         public static string GetString(string key)
         {
-            string value = null;
-            if (stringedValues.ContainsKey(key))
-                value = stringedValues[key];
-            if (string.IsNullOrEmpty(value))
-                value = string.Empty;
+            return stringedValues.First(stringedValue => stringedValue.name.Equals(key)).value;
+        }
+        public static string GetString(int id)
+        {
+            if (id < 0)
+                throw new IndexOutOfRangeException();
+
+            ExtendIfOutOfRange(id);
+            return stringedValues[id].value;
+        }
+        internal static string TryGetString(string key, int id)
+        {
+            string value;
+            if (!string.IsNullOrEmpty(key))
+                value = GetString(key);
+            else
+                value = GetString(id);
             return value;
-        }*/
+        }
     }
 }

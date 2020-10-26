@@ -7,9 +7,6 @@ namespace MacroMan.MacroActions
 {
     public class KeyboardMacro : MacroType
     {
-        // Available actions include key down, key up, key press, toggle key, is key down, is key up, is key toggled
-        // Available properties include virtual key code
-
         /// <summary>
         /// This enum is used to identify the action this macro will do
         /// We can create an array of actions if we want for this enum,
@@ -30,25 +27,10 @@ namespace MacroMan.MacroActions
         private enum KeyboardProperties
         {
             key_code = 0,
-            is_down = 1,
-            is_up = 2,
+            toggle_state = 1,
+            is_pressed = 2,
             is_toggled = 3,
         }
-        /*
-        /// <summary>
-        /// This array should match the properties enum
-        /// </summary>
-        private PropertyType[] propertyTypes = new PropertyType[]
-        {
-            PropertyType.integer,
-        };
-        private object[] properties;
-        // If we cange the properties to their own property type, each property would have a name,
-        // an id, a type, a stored value, and the possible values. The possible values will be used
-        // as a way of knowing if a textbox should be displayed or a dropdown. So if what's returned
-        // from possible values is empty or null, it will be a textbox. If what's returned is not
-        // empty or null, then it should be a dropdown of those possible values.
-        */
 
         public string errorMessage { get; private set; }
         public int error { get; private set; }
@@ -66,16 +48,16 @@ namespace MacroMan.MacroActions
             },
             new MacroProperty()
             {
-                name = KeyboardProperties.is_down.ToString(),
-                id = (int)KeyboardProperties.is_down,
+                name = KeyboardProperties.toggle_state.ToString(),
+                id = (int)KeyboardProperties.toggle_state,
                 type = PropertyType.boolean,
                 value = false,
-                readOnly = true,
+                readOnly = false,
             },
             new MacroProperty()
             {
-                name = KeyboardProperties.is_up.ToString(),
-                id = (int)KeyboardProperties.is_up,
+                name = KeyboardProperties.is_pressed.ToString(),
+                id = (int)KeyboardProperties.is_pressed,
                 type = PropertyType.boolean,
                 value = false,
                 readOnly = true,
@@ -90,21 +72,23 @@ namespace MacroMan.MacroActions
             },
         };
 
-        //public KeyboardMacro()
-        //{
-        //    int propertyCount = Enum.GetValues(typeof(KeyboardProperties)).Length;
-        //    properties = new object[propertyCount];
-        //}
-
-        public override Dictionary<int, string> GetProperties()
+        /*public static Dictionary<int, string> GetProperties()
         {
-            //return EnumToDictionary(typeof(KeyboardProperties));
-            return PropsToDictionary(properties);
+            return EnumToDictionary(typeof(KeyboardProperties));
         }
-        public override Dictionary<int, string> GetActions()
+        public static Dictionary<int, string> GetActions()
         {
             return EnumToDictionary(typeof(KeyboardAction));
+        }*/
+        public static Array GetProperties()
+        {
+            return Enum.GetValues(typeof(KeyboardProperties));
         }
+        public static Array GetActions()
+        {
+            return Enum.GetValues(typeof(KeyboardAction));
+        }
+
         public override void SetAction(int actionId)
         {
             executedAction = (KeyboardAction)actionId;
@@ -113,16 +97,20 @@ namespace MacroMan.MacroActions
         {
             return (int)executedAction;
         }
-        internal override MacroProperty GetProperty(int propertyId)
+        public override MacroProperty GetProperty(int propertyId)
         {
             return properties.First(property => property.id == propertyId);
         }
+        public override MacroProperty GetProperty(string propertyKey)
+        {
+            return properties.First(property => property.name.Equals(propertyKey));
+        }
+        internal override MacroProperty TryGetProperty(string propertyKey, int propertyId)
+        {
+            return properties.First(property => (!string.IsNullOrEmpty(propertyKey) && property.name.Equals(propertyKey)) || (propertyId >= 0 && property.id == propertyId));
+        }
         public override void SetPropertyValue(int propertyId, object value)
         {
-            //properties[propertyId] = value;
-            //GetProperty(propertyId).value = value;
-
-            //Since MacroProperty is a struct
             for (int i = 0; i < properties.Length; i++)
             {
                 if (properties[i].id == propertyId)
@@ -132,42 +120,55 @@ namespace MacroMan.MacroActions
                 }
             }
         }
-        public override object GetPropertyValue(int propertyId)
+        public override void SetPropertyValue(string propertyKey, object value)
         {
-            return GetProperty(propertyId).value;
+            for (int i = 0; i < properties.Length; i++)
+            {
+                if (properties[i].name.Equals(propertyKey))
+                {
+                    properties[i].value = value;
+                    break;
+                }
+            }
         }
-        public override int GetPropertyType(int propertyId)
+        internal override void TrySetPropertyValue(string propertyKey, int propertyId, object value)
         {
-            return (int)GetProperty(propertyId).type;
+            if (!string.IsNullOrEmpty(propertyKey))
+                SetPropertyValue(propertyKey, value);
+            else if (propertyId >= 0)
+                SetPropertyValue(propertyId, value);
+            else
+                throw new KeyNotFoundException();
         }
-        public override bool IsPropertyReadOnly(int propertyId)
-        {
-            return GetProperty(propertyId).readOnly;
-        }
-        public override async Task<int> Execute()
+        public override Task<int> Execute()
         {
             error = 0;
             errorMessage = null;
             try
             {
-                switch ((KeyboardAction)executedAction)
+                switch (executedAction)
                 {
                     case KeyboardAction.key_down:
-                        KeyboardOperations.KeyDown((VirtualKey)GetPropertyValue((int)KeyboardProperties.key_code));
+                        KeyboardOperations.KeyDown((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value);
                         break;
                     case KeyboardAction.key_up:
+                        KeyboardOperations.KeyUp((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value);
                         break;
                     case KeyboardAction.key_press:
+                        KeyboardOperations.KeyPress((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value);
                         break;
                     case KeyboardAction.key_toggle:
+                        KeyboardOperations.SetToggleState((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value, (bool)GetProperty((int)KeyboardProperties.toggle_state).value);
                         break;
                     case KeyboardAction.get_state:
+                        SetPropertyValue((int)KeyboardProperties.is_pressed, KeyboardOperations.IsKeyPressed((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value));
+                        SetPropertyValue((int)KeyboardProperties.is_toggled, KeyboardOperations.IsKeyToggled((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value));
                         break;
                 }
             }
             catch (Exception e) { error = 1; errorMessage = e.ToString(); }
 
-            return error;
+            return Task.FromResult(error);
         }
     }
 }
