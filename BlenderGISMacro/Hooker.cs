@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace BlenderGISMacro
+namespace MacroMan
 {
     /// <summary>
     /// Source: https://social.msdn.microsoft.com/Forums/en-US/4f731541-1819-4391-bd66-d026b629b786/detect-keypress-in-the-background?forum=csharpgeneral

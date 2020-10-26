@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace BlenderGISMacro
+namespace MacroMan
 {
     //Similar class is on this site:
     //http://blogs.msdn.com/toub/archive/2006/05/03/589423.aspx

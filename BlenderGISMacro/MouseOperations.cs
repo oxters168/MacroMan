@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace BlenderGISMacro
+namespace MacroMan
 {
     /// <summary>
     /// Source: https://stackoverflow.com/questions/2416748/how-do-you-simulate-mouse-click-in-c

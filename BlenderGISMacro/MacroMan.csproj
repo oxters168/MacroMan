@@ -46,14 +46,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\KeyEventF.cs" />
-    <Compile Include="Enums\ShowWindowCmd.cs" />
-    <Compile Include="Enums\VirtualKey.cs" />
-    <Compile Include="Enums\WindowsHook.cs" />
-    <Compile Include="Enums\WindowsMessage.cs" />
+    <Compile Include="MacroActions\Enums\DataSource.cs" />
+    <Compile Include="MacroActions\Enums\PropertyType.cs" />
+    <Compile Include="MacroActions\IntegerValue.cs" />
+    <Compile Include="MacroActions\StringedValue.cs" />
+    <Compile Include="MacroActions\ValuesDatabase.cs" />
+    <Compile Include="MacroActions\MacroProperty.cs" />
+    <Compile Include="MacroActions\IntegerMacro.cs" />
+    <Compile Include="WindowsValues\KeyEventF.cs" />
+    <Compile Include="WindowsValues\ShowWindowCmd.cs" />
+    <Compile Include="WindowsValues\VirtualKey.cs" />
+    <Compile Include="WindowsValues\WindowsHook.cs" />
+    <Compile Include="WindowsValues\WindowsMessage.cs" />
     <Compile Include="ExternAPI.cs" />
     <Compile Include="Hooker.cs" />
     <Compile Include="KeyboardOperations.cs" />
+    <Compile Include="MacroActions\KeyboardMacro.cs" />
+    <Compile Include="MacroActions\MacroExecutor.cs" />
+    <Compile Include="MacroActions\MacroType.cs" />
     <Compile Include="MacroForm.cs">
       <SubType>Form</SubType>
     </Compile>

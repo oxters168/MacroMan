@@ -1,4 +1,4 @@
-﻿namespace BlenderGISMacro
+﻿namespace MacroMan
 {
     public enum KeyEventF
     {

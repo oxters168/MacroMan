@@ -1,4 +1,4 @@
-﻿namespace BlenderGISMacro
+﻿namespace MacroMan
 {
     /// <summary>
     /// Source: http://pinvoke.net/default.aspx/Constants.WM

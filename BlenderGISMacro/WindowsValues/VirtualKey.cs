@@ -1,4 +1,4 @@
-﻿namespace BlenderGISMacro
+﻿namespace MacroMan
 {
     /// <summary>
     /// Source: https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes

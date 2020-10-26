@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Drawing;
 
-namespace BlenderGISMacro
+namespace MacroMan
 {
     public static class WindowOperations
     {

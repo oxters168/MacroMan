@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BlenderGISMacro.Properties
+namespace MacroMan.Properties
 {
 
 

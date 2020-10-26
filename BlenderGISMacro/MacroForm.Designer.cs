@@ -1,4 +1,4 @@
-﻿namespace BlenderGISMacro
+﻿namespace MacroMan
 {
     partial class MacroForm
     {
@@ -41,9 +41,6 @@
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
-            this.listBox1 = new System.Windows.Forms.ListBox();
             this.minimizeBtn = new System.Windows.Forms.Button();
             this.maximizeBtn = new System.Windows.Forms.Button();
             this.unminimizeBtn = new System.Windows.Forms.Button();
@@ -52,7 +49,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
-            this.flowLayoutPanel1.SuspendLayout();
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // notifyIcon1
@@ -151,33 +148,6 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Controls.Add(this.listBox1);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(204, 12);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(136, 295);
-            this.flowLayoutPanel1.TabIndex = 12;
-            // 
-            // vScrollBar1
-            // 
-            this.vScrollBar1.Location = new System.Drawing.Point(343, 12);
-            this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(17, 295);
-            this.vScrollBar1.TabIndex = 13;
-            // 
-            // listBox1
-            // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Items.AddRange(new object[] {
-            "item1",
-            "item2",
-            "item3"});
-            this.listBox1.Location = new System.Drawing.Point(3, 3);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(120, 95);
-            this.listBox1.TabIndex = 15;
-            // 
             // minimizeBtn
             // 
             this.minimizeBtn.Location = new System.Drawing.Point(12, 255);
@@ -249,11 +219,27 @@
             this.textBox4.Size = new System.Drawing.Size(32, 20);
             this.textBox4.TabIndex = 21;
             // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Items.AddRange(new object[] {
+            "item1",
+            "item2",
+            "item3"});
+            this.listBox1.Location = new System.Drawing.Point(204, 12);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(156, 290);
+            this.listBox1.TabIndex = 22;
+            this.listBox1.DragDrop += new System.Windows.Forms.DragEventHandler(this.listBox1_DragDrop);
+            this.listBox1.DragOver += new System.Windows.Forms.DragEventHandler(this.listBox1_DragOver);
+            this.listBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseDown);
+            // 
             // MacroForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(372, 347);
+            this.Controls.Add(this.listBox1);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.button3);
@@ -262,8 +248,6 @@
             this.Controls.Add(this.unminimizeBtn);
             this.Controls.Add(this.maximizeBtn);
             this.Controls.Add(this.minimizeBtn);
-            this.Controls.Add(this.vScrollBar1);
-            this.Controls.Add(this.flowLayoutPanel1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label4);
@@ -279,7 +263,6 @@
             this.Text = "Macro Man";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MacroForm_FormClosing);
             this.Resize += new System.EventHandler(this.MacroForm_Resize);
-            this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -298,9 +281,6 @@
         private System.Windows.Forms.ComboBox comboBox3;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.VScrollBar vScrollBar1;
-        private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button minimizeBtn;
         private System.Windows.Forms.Button maximizeBtn;
         private System.Windows.Forms.Button unminimizeBtn;
@@ -309,6 +289,7 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.ListBox listBox1;
     }
 }
 
