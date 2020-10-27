@@ -7,13 +7,6 @@ namespace MacroMan.MacroActions
 {
     public abstract class MacroType
     {
-        //All the different action categories inherit from this class
-        //They will all have their own actions and properties for those actions
-        //Keyboard actions
-        //Mouse actions
-        //Timed actions
-        //etc...
-
         public string name = string.Empty;
         private int uniqueId;
         private static int totalId;
@@ -29,8 +22,8 @@ namespace MacroMan.MacroActions
         public MacroType(MacroType other) : this()
         {
             string newName = other.name;
-            if (cachedMacros.Where(macro => macro.name.Equals(newName)).Count() > 0)
-                newName = newName + "_copy";
+            while (cachedMacros.Where(macro => macro.name.Equals(newName)).Count() > 0)
+                newName = newName + "_cp";
             name = newName;
 
             SetAction(other.GetAction());
@@ -48,6 +41,10 @@ namespace MacroMan.MacroActions
             return name;
         }
 
+        public static void RemoveFromCache(MacroType macro)
+        {
+            cachedMacros.Remove(macro);
+        }
         public static MacroType GetMacro(int id)
         {
             return cachedMacros.FirstOrDefault(macro => macro.uniqueId == id);
@@ -67,7 +64,7 @@ namespace MacroMan.MacroActions
             return macro;
         }
 
-        public int GetId() { return uniqueId;  } //Every macro action should have a unique id
+        public int GetId() { return uniqueId;  }
         public abstract Array GetProperties();
         public abstract Array GetShownProperties();
         public abstract Array GetActions();
@@ -79,7 +76,16 @@ namespace MacroMan.MacroActions
         public abstract MacroProperty GetProperty(int propertyId);
         public abstract MacroProperty GetProperty(string propertyKey);
         internal abstract MacroProperty TryGetProperty(string propertyKey, int propertyId);
-        public abstract Task<int> Execute(); //The return value can be used to give feedback on the executed action
+        public abstract Task<int> Execute();
+
+        public static async Task Execute(params MacroType[] sequence)
+        {
+            for (int i = 0; i < sequence.Length; i++)
+            {
+                MacroType macro = sequence[i];
+                await macro.Execute();
+            }
+        }
 
         public static Macro GetMacroType(MacroType macro)
         {
@@ -88,6 +94,8 @@ namespace MacroMan.MacroActions
                 macroType = Macro.Keyboard;
             else if (macro is IntegerMacro)
                 macroType = Macro.Integer;
+            else if (macro is TimeMacro)
+                macroType = Macro.Time;
             return macroType;
         }
         public static MacroType GenerateMacro(Macro macroType, MacroType toClone = null)
@@ -107,6 +115,12 @@ namespace MacroMan.MacroActions
                     else
                         macro = new IntegerMacro();
                     break;
+                case Macro.Time:
+                    if (toClone != null)
+                        macro = new TimeMacro(toClone);
+                    else
+                        macro = new TimeMacro();
+                    break;
             }
             return macro;
         }
@@ -117,7 +131,7 @@ namespace MacroMan.MacroActions
             macro = GenerateMacro(macroType);
             macro.uniqueId = -1;
             totalId = prevUniqueId;
-            cachedMacros.Remove(macro);
+            RemoveFromCache(macro);
             return macro;
         }
         private static MacroType GetReference(Macro macroType)

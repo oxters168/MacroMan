@@ -5,85 +5,53 @@ using System.Threading.Tasks;
 
 namespace MacroMan.MacroActions
 {
-    public class KeyboardMacro : MacroType
+    public class TimeMacro : MacroType
     {
         /// <summary>
         /// This enum is used to identify the action this macro will do
         /// We can create an array of actions if we want for this enum,
         /// but I don't see why I would do that than just manually call the actions
         /// </summary>
-        private enum KeyboardAction
+        private enum TimeAction
         {
-            key_down = 0,
-            key_up = 1,
-            key_press = 2,
-            key_toggle = 3,
-            get_state = 4,
+            wait = 0,
         }
         /// <summary>
         /// This enum is used to identify and retrieve the variables stored within this
         /// macro. The variables can be found in the properties array.
         /// </summary>
-        private enum KeyboardProperties
+        private enum TimeProperties
         {
-            key_code = 0,
-            toggle_state = 1,
-            is_pressed = 2,
-            is_toggled = 3,
+            milliseconds = 0,
         }
 
         public string errorMessage { get; private set; }
         public int error { get; private set; }
 
-        private KeyboardAction executedAction;
+        private TimeAction executedAction;
         private MacroProperty[] properties = new MacroProperty[]
         {
             new MacroProperty()
             {
-                name = KeyboardProperties.key_code.ToString(),
-                id = (int)KeyboardProperties.key_code,
+                name = TimeProperties.milliseconds.ToString(),
+                id = (int)TimeProperties.milliseconds,
                 type = PropertyType.integer,
-                value = (int)VirtualKey.A,
-                readOnly = false,
-                customOptions = () => { return Enum.GetValues(typeof(VirtualKey)); },
-            },
-            new MacroProperty()
-            {
-                name = KeyboardProperties.toggle_state.ToString(),
-                id = (int)KeyboardProperties.toggle_state,
-                type = PropertyType.boolean,
                 value = 0,
                 readOnly = false,
-            },
-            new MacroProperty()
-            {
-                name = KeyboardProperties.is_pressed.ToString(),
-                id = (int)KeyboardProperties.is_pressed,
-                type = PropertyType.boolean,
-                value = 0,
-                readOnly = true,
-            },
-            new MacroProperty()
-            {
-                name = KeyboardProperties.is_toggled.ToString(),
-                id = (int)KeyboardProperties.is_toggled,
-                type = PropertyType.boolean,
-                value = 0,
-                readOnly = true,
             },
         };
 
-        public KeyboardMacro() : base() { }
-        public KeyboardMacro(MacroType other) : base(other) { }
+        public TimeMacro() : base() { }
+        public TimeMacro(MacroType other) : base(other) { }
 
         public override Array GetProperties()
         {
-            return Enum.GetValues(typeof(KeyboardProperties));
+            return Enum.GetValues(typeof(TimeProperties));
         }
         public override Array GetShownProperties()
         {
-            var allProperties = (KeyboardProperties[])Enum.GetValues(typeof(KeyboardProperties));
-            List<KeyboardProperties> shownProperties = new List<KeyboardProperties>();
+            var allProperties = (TimeProperties[])Enum.GetValues(typeof(TimeProperties));
+            List<TimeProperties> shownProperties = new List<TimeProperties>();
             for (int i = 0; i < allProperties.Length; i++)
             {
                 if (!GetProperty((int)allProperties[i]).readOnly)
@@ -93,11 +61,11 @@ namespace MacroMan.MacroActions
         }
         public override Array GetActions()
         {
-            return Enum.GetValues(typeof(KeyboardAction));
+            return Enum.GetValues(typeof(TimeAction));
         }
         public override void SetAction(int actionId)
         {
-            executedAction = (KeyboardAction)actionId;
+            executedAction = (TimeAction)actionId;
         }
         public override int GetAction()
         {
@@ -146,7 +114,7 @@ namespace MacroMan.MacroActions
             else
                 throw new KeyNotFoundException();
         }
-        public override Task<int> Execute()
+        public async override Task<int> Execute()
         {
             error = 0;
             errorMessage = null;
@@ -154,27 +122,14 @@ namespace MacroMan.MacroActions
             {
                 switch (executedAction)
                 {
-                    case KeyboardAction.key_down:
-                        KeyboardOperations.KeyDown((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value);
-                        break;
-                    case KeyboardAction.key_up:
-                        KeyboardOperations.KeyUp((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value);
-                        break;
-                    case KeyboardAction.key_press:
-                        KeyboardOperations.KeyPress((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value);
-                        break;
-                    case KeyboardAction.key_toggle:
-                        KeyboardOperations.SetToggleState((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value, (bool)GetProperty((int)KeyboardProperties.toggle_state).value);
-                        break;
-                    case KeyboardAction.get_state:
-                        SetPropertyValue((int)KeyboardProperties.is_pressed, KeyboardOperations.IsKeyPressed((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value));
-                        SetPropertyValue((int)KeyboardProperties.is_toggled, KeyboardOperations.IsKeyToggled((VirtualKey)GetProperty((int)KeyboardProperties.key_code).value));
+                    case TimeAction.wait:
+                        await Task.Delay((int)GetProperty((int)TimeProperties.milliseconds).value);
                         break;
                 }
             }
             catch (Exception e) { error = 1; errorMessage = e.ToString(); }
 
-            return Task.FromResult(error);
+            return error;
         }
     }
 }

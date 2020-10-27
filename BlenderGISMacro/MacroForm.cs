@@ -19,6 +19,10 @@ namespace MacroMan
         private const int milliDelay = 10;
         private MacroType faux;
 
+        private bool prevShortcut;
+
+        private VirtualKey[] runShortcut = new VirtualKey[] { VirtualKey.SPACE };
+
         public MacroForm()
         {
             InitializeComponent();
@@ -50,6 +54,23 @@ namespace MacroMan
         private void OnUpdate()
         {
             currentTime = DateTime.Now.Ticks / 10000000d;
+
+            PlayOnShortcut();
+        }
+
+        private void PlayOnShortcut()
+        {
+            bool shortcutPressed = true;
+            for (int i = 0; i < runShortcut.Length; i++)
+                shortcutPressed &= KeyboardOperations.IsKeyPressed(runShortcut[i]);
+
+            if (shortcutPressed && !prevShortcut)
+            {
+                RunSequence();
+                prevShortcut = true;
+            }
+            else if (!shortcutPressed)
+                prevShortcut = false;
         }
 
         private static string ToComboString(List<VirtualKey> keys)
@@ -149,7 +170,7 @@ namespace MacroMan
                 macroActionComboBox.SelectedIndex = faux.GetAction();
             }
 
-            addToListButton.Enabled = faux != null;
+            //addToListButton.Enabled = faux != null;
             macroDataSplitContainer.Visible = faux != null;
             macroDataSplitContainer.Enabled = faux != null;
         }
@@ -189,15 +210,27 @@ namespace MacroMan
         private void macrosComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             faux = MacroType.GenerateFauxMacro(GetCurrentMacroType());
+            addToListButton.Enabled = true;
             RefreshFauxDisplay();
         }
 
+        private void AddMacro(MacroType macro)
+        {
+            MacroType newMacro = MacroType.GenerateMacro(GetCurrentMacroType(), macro);
+            macrosListBox.Items.Add(newMacro);
+            addToListButton.Enabled = false;
+            RefreshFauxDisplay();
+        }
         private void addToListButton_Click(object sender, EventArgs e)
         {
-            MacroType newMacro = MacroType.GenerateMacro(GetCurrentMacroType(), faux);
-            macrosListBox.Items.Add(newMacro);
-            faux = null;
-            RefreshFauxDisplay();
+            if (!string.IsNullOrEmpty(faux.name) && MacroType.GetMacro(faux.name) == null)
+            {
+                MacroType newMacro = faux;
+                faux = null;
+                AddMacro(newMacro);
+            }
+            else
+                MessageBox.Show("Name cannot be empty or repeated", "Invalid Name", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void macroPropertiesListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -207,6 +240,7 @@ namespace MacroMan
         private void macrosListBox_DoubleClick(object sender, EventArgs e)
         {
             faux = (MacroType)macrosListBox.SelectedItem;
+            addToListButton.Enabled = false;
             RefreshFauxDisplay();
         }
 
@@ -241,6 +275,114 @@ namespace MacroMan
         private void macroActionComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             faux.SetAction(GetCurrentActionId());
+        }
+
+        private void ShiftMacroSelection(int amount)
+        {
+            if (macrosListBox.SelectedIndex >= 0)
+            {
+                int currentIndex = macrosListBox.SelectedIndex;
+                currentIndex += amount;
+                if (currentIndex <= 0)
+                    currentIndex = 0;
+                else if (currentIndex > macrosListBox.Items.Count - 1)
+                    currentIndex = macrosListBox.Items.Count - 1;
+                var toBeMoved = macrosListBox.SelectedItem;
+                macrosListBox.Items.Remove(toBeMoved);
+                macrosListBox.Items.Insert(currentIndex, toBeMoved);
+                macrosListBox.SelectedIndex = currentIndex;
+            }
+        }
+        private void RemoveMacroSelection()
+        {
+            if (macrosListBox.SelectedIndex >= 0)
+            {
+                var macro = macrosListBox.SelectedItem;
+                macrosListBox.Items.Remove(macro);
+                MacroType.RemoveFromCache((MacroType)macro);
+            }
+        }
+
+        private void shiftMacroUpButton_Click(object sender, EventArgs e)
+        {
+            ShiftMacroSelection(-1);
+        }
+        private void shiftMacroDownButton_Click(object sender, EventArgs e)
+        {
+            ShiftMacroSelection(1);
+        }
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            RemoveMacroSelection();
+        }
+
+        private void macrosListBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            bool alreadyHasSelection = macrosListBox.SelectedIndex >= 0;
+            if (e.KeyCode == Keys.Up)
+            {
+                if (e.Shift)
+                    ShiftMacroSelection(-1);
+                else if (macrosListBox.Items.Count > 0)
+                {
+                    if (!alreadyHasSelection)
+                        macrosListBox.SelectedIndex = macrosListBox.Items.Count - 1;
+                    else if (macrosListBox.SelectedIndex > 0)
+                        macrosListBox.SelectedIndex -= 1;
+                }
+            }
+
+            if (e.KeyCode == Keys.Down)
+            {
+                if (e.Shift)
+                    ShiftMacroSelection(1);
+                else if (macrosListBox.Items.Count > 0)
+                {
+                    if (!alreadyHasSelection)
+                        macrosListBox.SelectedIndex = 0;
+                    else if (macrosListBox.SelectedIndex < macrosListBox.Items.Count - 1)
+                        macrosListBox.SelectedIndex += 1;
+                }
+            }
+
+            if (e.KeyCode == Keys.Delete)
+            {
+                RemoveMacroSelection();
+            }
+
+            if (e.Control && e.KeyCode == Keys.D)
+            {
+                if (alreadyHasSelection)
+                {
+                    AddMacro((MacroType)macrosListBox.SelectedItem);
+                }
+            }
+
+            e.Handled = true;
+        }
+
+        private void macrosListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Console.WriteLine("Changed");
+        }
+
+        private void playButton_Click(object sender, EventArgs e)
+        {
+            RunSequence();
+        }
+        private async void RunSequence()
+        {
+            if (macrosListBox.Items.Count > 0)
+            {
+                macrosListBox.Enabled = false;
+
+                MacroType[] sequence = new MacroType[macrosListBox.Items.Count];
+                for (int i = 0; i < sequence.Length; i++)
+                    sequence[i] = (MacroType)macrosListBox.Items[i];
+                await MacroType.Execute(sequence);
+
+                macrosListBox.Enabled = true;
+            }
         }
     }
 }

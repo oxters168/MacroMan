@@ -4,5 +4,6 @@
     {
         Keyboard,
         Integer,
+        Time,
     }
 }

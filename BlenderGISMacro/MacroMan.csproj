@@ -52,6 +52,7 @@
     <Compile Include="MacroActions\Enums\PropertyType.cs" />
     <Compile Include="MacroActions\IntegerValue.cs" />
     <Compile Include="MacroActions\StringedValue.cs" />
+    <Compile Include="MacroActions\TimeMacro.cs" />
     <Compile Include="MacroActions\ValuesDatabase.cs" />
     <Compile Include="MacroActions\MacroProperty.cs" />
     <Compile Include="MacroActions\IntegerMacro.cs" />
