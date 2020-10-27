@@ -17,6 +17,7 @@ namespace MacroMan
         private double startTime = 0;
         private double currentTime = 0;
         private const int milliDelay = 10;
+        private MacroType faux;
 
         public MacroForm()
         {
@@ -28,6 +29,7 @@ namespace MacroMan
             startTime = DateTime.Now.Ticks / 10000000d;
 
             macrosComboBox.DataSource = Enum.GetValues(typeof(Macro));
+            RefreshFauxDisplay();
         }
         private async void FrameRunner(CancellationToken cancellationToken)
         {
@@ -60,6 +62,19 @@ namespace MacroMan
                     currentCombo += " + ";
             }
             return currentCombo;
+        }
+
+        private Macro GetCurrentMacroType()
+        {
+            return (Macro)macrosComboBox.SelectedItem;
+        }
+        private int GetCurrentActionId()
+        {
+            return (int)macroActionComboBox.SelectedItem;
+        }
+        private int GetCurrentPropertyId()
+        {
+            return (int)macroPropertiesListBox.SelectedItem;
         }
 
         private void MacroForm_Resize(object sender, EventArgs e)
@@ -114,40 +129,118 @@ namespace MacroMan
             }
         }*/
 
-        #region Reorderable stuff
-        //Sauce: https://stackoverflow.com/questions/805165/reorder-a-winforms-listbox-using-drag-and-drop
-        private void macrosListBox_MouseDown(object sender, MouseEventArgs e)
+        private void RefreshFauxDisplay()
         {
-            if (this.macrosListBox.SelectedItem == null)
-                return;
-            this.macrosListBox.DoDragDrop(this.macrosListBox.SelectedItem, DragDropEffects.Move);
-        }
-        private void macrosListBox_DragOver(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.Move;
-        }
-        private void macrosListBox_DragDrop(object sender, DragEventArgs e)
-        {
-            Point point = macrosListBox.PointToClient(new Point(e.X, e.Y));
-            int index = this.macrosListBox.IndexFromPoint(point);
-            if (index < 0)
-                index = this.macrosListBox.Items.Count - 1;
-            object data = e.Data.GetData(typeof(DateTime));
-            this.macrosListBox.Items.Remove(data);
-            this.macrosListBox.Items.Insert(index, data);
-        }
-        #endregion
+            if (faux != null)
+            {
+                macroNameTextBox.Text = faux.name;
+                macroIdLabel.Text = faux.GetId() >= 0 ? "id: " + faux.GetId() : "id: -";
 
-        private void macrosComboBox_SelectedIndexChanged(object sender, EventArgs e)
+                Macro fauxType = MacroType.GetMacroType(faux);
+
+                int propertyListIndex = macroPropertiesListBox.SelectedIndex;
+
+                macroPropertiesListBox.DataSource = MacroType.GetShownProperties(fauxType);
+                macroActionComboBox.DataSource = MacroType.GetActions(fauxType);
+
+                if (propertyListIndex >= 0 && propertyListIndex < macroPropertiesListBox.Items.Count)
+                    macroPropertiesListBox.SelectedIndex = propertyListIndex;
+
+                macroActionComboBox.SelectedIndex = faux.GetAction();
+            }
+
+            addToListButton.Enabled = faux != null;
+            macroDataSplitContainer.Visible = faux != null;
+            macroDataSplitContainer.Enabled = faux != null;
+        }
+        private void RefreshPropertyOptions()
         {
-            Macro currentMacroType = (Macro)macrosComboBox.SelectedItem;
-            macroPropertiesListBox.DataSource = MacroType.GetProperties(currentMacroType);
-            macroActionComboBox.DataSource = MacroType.GetActions(currentMacroType);
+            int propertyId = GetCurrentPropertyId();
+            Array propertyOptions = MacroType.GetPropertyOptions(GetCurrentMacroType(), propertyId);
+            bool hasOptions = propertyOptions != null;
+            propertyOptionsPanel.Enabled = hasOptions;
+            propertyOptionsPanel.Visible = hasOptions;
+            propertyValuePanel.Enabled = !hasOptions;
+            propertyValuePanel.Visible = !hasOptions;
+            propertyOptionsComboBox.DataSource = propertyOptions;
+
+            MacroProperty prop = faux.GetProperty(propertyId);
+            if (hasOptions)
+            {
+                int selectedIndex = -1;
+                for (int i = 0; i < propertyOptions.Length; i++)
+                {
+                    if ((int)prop.value == (int)propertyOptions.GetValue(i))
+                    {
+                        selectedIndex = i;
+                        break;
+                    }
+                }
+                propertyOptionsComboBox.SelectedIndex = selectedIndex;
+            }
+            else
+                propertyValueTextBox.Text = prop.value.ToString();
+        }
+
+        private void newButton_Click(object sender, EventArgs e)
+        {
+            macrosComboBox.DroppedDown = true;
+        }
+        private void macrosComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            faux = MacroType.GenerateFauxMacro(GetCurrentMacroType());
+            RefreshFauxDisplay();
+        }
+
+        private void addToListButton_Click(object sender, EventArgs e)
+        {
+            MacroType newMacro = MacroType.GenerateMacro(GetCurrentMacroType(), faux);
+            macrosListBox.Items.Add(newMacro);
+            faux = null;
+            RefreshFauxDisplay();
+        }
+
+        private void macroPropertiesListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshPropertyOptions();
+        }
+        private void macrosListBox_DoubleClick(object sender, EventArgs e)
+        {
+            faux = (MacroType)macrosListBox.SelectedItem;
+            RefreshFauxDisplay();
         }
 
         private void macroNameTextBox_TextChanged(object sender, EventArgs e)
         {
             macroNameLabel.Visible = string.IsNullOrEmpty(macroNameTextBox.Text);
+            faux.name = macroNameTextBox.Text;
+        }
+        private void propertyOptionsComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            int propertyId = GetCurrentPropertyId();
+            faux.SetPropertyValue(propertyId, (int)propertyOptionsComboBox.SelectedItem);
+        }
+        private void propertyValueTextBox_TextChanged(object sender, EventArgs e)
+        {
+            int propertyId = GetCurrentPropertyId();
+            PropertyType propertyType = faux.GetProperty(propertyId).type;
+            string originalText = propertyValueTextBox.Text;
+            try
+            {
+                if (propertyType == PropertyType.boolean)
+                    faux.SetPropertyValue(propertyId, Convert.ToBoolean(originalText) ? 1 : 0);
+                else if (propertyType == PropertyType.floating_point)
+                    faux.SetPropertyValue(propertyId, Convert.ToSingle(originalText));
+                else if (propertyType == PropertyType.integer)
+                    faux.SetPropertyValue(propertyId, Convert.ToInt32(originalText));
+                else if (propertyType == PropertyType.stringed_value)
+                    faux.SetPropertyValue(propertyId, originalText);
+            }
+            catch (Exception) { }
+        }
+        private void macroActionComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            faux.SetAction(GetCurrentActionId());
         }
     }
 }

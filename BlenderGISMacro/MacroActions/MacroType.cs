@@ -14,15 +14,38 @@ namespace MacroMan.MacroActions
         //Timed actions
         //etc...
 
-        public string name;
+        public string name = string.Empty;
         private int uniqueId;
         private static int totalId;
         private static List<MacroType> cachedMacros = new List<MacroType>();
+        private static Macro[] macroTypes = (Macro[])Enum.GetValues(typeof(Macro));
+        private static MacroType[] references = new MacroType[macroTypes.Length];
 
         public MacroType()
         {
             uniqueId = totalId++;
             cachedMacros.Add(this);
+        }
+        public MacroType(MacroType other) : this()
+        {
+            string newName = other.name;
+            if (cachedMacros.Where(macro => macro.name.Equals(newName)).Count() > 0)
+                newName = newName + "_copy";
+            name = newName;
+
+            SetAction(other.GetAction());
+
+            var props = GetProperties();
+            for (int i = 0; i < props.Length; i++)
+            {
+                int propertyId = (int)props.GetValue(i);
+                SetPropertyValue(propertyId, other.GetProperty(propertyId).value);
+            }
+        }
+
+        public override string ToString()
+        {
+            return name;
         }
 
         public static MacroType GetMacro(int id)
@@ -45,6 +68,9 @@ namespace MacroMan.MacroActions
         }
 
         public int GetId() { return uniqueId;  } //Every macro action should have a unique id
+        public abstract Array GetProperties();
+        public abstract Array GetShownProperties();
+        public abstract Array GetActions();
         public abstract void SetAction(int actionId);
         public abstract int GetAction();
         public abstract void SetPropertyValue(int propertyId, object value);
@@ -55,33 +81,73 @@ namespace MacroMan.MacroActions
         internal abstract MacroProperty TryGetProperty(string propertyKey, int propertyId);
         public abstract Task<int> Execute(); //The return value can be used to give feedback on the executed action
 
-        public static Array GetProperties(Macro macroType)
+        public static Macro GetMacroType(MacroType macro)
         {
-            Array properties = null;
+            Macro macroType = Macro.Integer;
+            if (macro is KeyboardMacro)
+                macroType = Macro.Keyboard;
+            else if (macro is IntegerMacro)
+                macroType = Macro.Integer;
+            return macroType;
+        }
+        public static MacroType GenerateMacro(Macro macroType, MacroType toClone = null)
+        {
+            MacroType macro = null;
             switch (macroType)
             {
                 case Macro.Keyboard:
-                    properties = KeyboardMacro.GetProperties();
+                    if (toClone != null)
+                        macro = new KeyboardMacro(toClone);
+                    else
+                        macro = new KeyboardMacro();
                     break;
                 case Macro.Integer:
-                    properties = IntegerMacro.GetProperties();
+                    if (toClone != null)
+                        macro = new IntegerMacro(toClone);
+                    else
+                        macro = new IntegerMacro();
                     break;
             }
-            return properties;
+            return macro;
+        }
+        public static MacroType GenerateFauxMacro(Macro macroType)
+        {
+            MacroType macro;
+            int prevUniqueId = totalId;
+            macro = GenerateMacro(macroType);
+            macro.uniqueId = -1;
+            totalId = prevUniqueId;
+            cachedMacros.Remove(macro);
+            return macro;
+        }
+        private static MacroType GetReference(Macro macroType)
+        {
+            int typeIndex = Array.IndexOf(macroTypes, macroType);
+
+            MacroType reference = references[typeIndex];
+            if (reference == null)
+            {
+                reference = GenerateFauxMacro(macroType);
+                references[typeIndex] = reference;
+            }
+
+            return reference;
+        }
+        public static Array GetProperties(Macro macroType)
+        {
+            return GetReference(macroType).GetProperties();
+        }
+        public static Array GetShownProperties(Macro macroType)
+        {
+            return GetReference(macroType).GetShownProperties();
         }
         public static Array GetActions(Macro macroType)
         {
-            Array actions = null;
-            switch (macroType)
-            {
-                case Macro.Keyboard:
-                    actions = KeyboardMacro.GetActions();
-                    break;
-                case Macro.Integer:
-                    actions = IntegerMacro.GetActions();
-                    break;
-            }
-            return actions;
+            return GetReference(macroType).GetActions();
+        }
+        public static Array GetPropertyOptions(Macro macroType, int propertyId)
+        {
+            return GetReference(macroType).GetProperty(propertyId).GetOptions();
         }
 
         /// <summary>

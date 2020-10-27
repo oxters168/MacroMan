@@ -1,4 +1,6 @@
-﻿namespace MacroMan.MacroActions
+﻿using System;
+
+namespace MacroMan.MacroActions
 {
     public struct MacroProperty
     {
@@ -7,5 +9,16 @@
         public PropertyType type;
         public object value;
         public bool readOnly;
+        public Func<Array> customOptions;
+
+        public Array GetOptions()
+        {
+            Array options = null;
+            if (type == PropertyType.boolean)
+                options = Enum.GetValues(typeof(BooleanValue));
+            else if (customOptions != null)
+                options = customOptions();
+            return options;
+        }
     }
 }

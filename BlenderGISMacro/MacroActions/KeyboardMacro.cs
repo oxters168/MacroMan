@@ -45,13 +45,14 @@ namespace MacroMan.MacroActions
                 type = PropertyType.integer,
                 value = -1,
                 readOnly = false,
+                customOptions = () => { return Enum.GetValues(typeof(VirtualKey)); },
             },
             new MacroProperty()
             {
                 name = KeyboardProperties.toggle_state.ToString(),
                 id = (int)KeyboardProperties.toggle_state,
                 type = PropertyType.boolean,
-                value = false,
+                value = 0,
                 readOnly = false,
             },
             new MacroProperty()
@@ -59,7 +60,7 @@ namespace MacroMan.MacroActions
                 name = KeyboardProperties.is_pressed.ToString(),
                 id = (int)KeyboardProperties.is_pressed,
                 type = PropertyType.boolean,
-                value = false,
+                value = 0,
                 readOnly = true,
             },
             new MacroProperty()
@@ -67,28 +68,33 @@ namespace MacroMan.MacroActions
                 name = KeyboardProperties.is_toggled.ToString(),
                 id = (int)KeyboardProperties.is_toggled,
                 type = PropertyType.boolean,
-                value = false,
+                value = 0,
                 readOnly = true,
             },
         };
 
-        /*public static Dictionary<int, string> GetProperties()
-        {
-            return EnumToDictionary(typeof(KeyboardProperties));
-        }
-        public static Dictionary<int, string> GetActions()
-        {
-            return EnumToDictionary(typeof(KeyboardAction));
-        }*/
-        public static Array GetProperties()
+        public KeyboardMacro() : base() { }
+        public KeyboardMacro(MacroType other) : base(other) { }
+
+        public override Array GetProperties()
         {
             return Enum.GetValues(typeof(KeyboardProperties));
         }
-        public static Array GetActions()
+        public override Array GetShownProperties()
+        {
+            var allProperties = (KeyboardProperties[])Enum.GetValues(typeof(KeyboardProperties));
+            List<KeyboardProperties> shownProperties = new List<KeyboardProperties>();
+            for (int i = 0; i < allProperties.Length; i++)
+            {
+                if (!GetProperty((int)allProperties[i]).readOnly)
+                    shownProperties.Add(allProperties[i]);
+            }
+            return shownProperties.ToArray();
+        }
+        public override Array GetActions()
         {
             return Enum.GetValues(typeof(KeyboardAction));
         }
-
         public override void SetAction(int actionId)
         {
             executedAction = (KeyboardAction)actionId;

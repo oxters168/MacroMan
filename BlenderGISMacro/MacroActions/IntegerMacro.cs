@@ -27,20 +27,22 @@ namespace MacroMan.MacroActions
         private enum IntegerProperties
         {
             first_value = 0,
-            second_value = 1,
-            result_value = 2,
-            first_source = 3,
-            first_source_id = 4,
-            second_source = 5,
-            second_source_id = 6,
-            result_source = 7,
-            result_source_id = 8,
-            first_source_key = 9,
-            first_source_macro_id = 10,
-            first_source_macro_key = 11,
-            second_source_key = 12,
-            second_source_macro_id = 13,
-            second_source_macro_key = 14,
+            first_source = 1,
+            first_source_id = 2,
+            first_source_key = 3,
+            first_source_macro_id = 4,
+            first_source_macro_key = 5,
+
+            second_value = 6,
+            second_source = 7,
+            second_source_id = 8,
+            second_source_key = 9,
+            second_source_macro_id = 10,
+            second_source_macro_key = 11,
+
+            result_value = 12,
+            result_source = 13,
+            result_source_id = 14,
             result_source_key = 15,
             result_source_macro_id = 16,
             result_source_macro_key = 17,
@@ -81,7 +83,7 @@ namespace MacroMan.MacroActions
                 name = IntegerProperties.first_source_id.ToString(),
                 id = (int)IntegerProperties.first_source_id,
                 type = PropertyType.integer,
-                value = 0,
+                value = -1,
                 readOnly = false,
             },
             new MacroProperty()
@@ -89,8 +91,9 @@ namespace MacroMan.MacroActions
                 name = IntegerProperties.first_source_key.ToString(),
                 id = (int)IntegerProperties.first_source_key,
                 type = PropertyType.stringed_value,
-                value = null,
+                value = string.Empty,
                 readOnly = false,
+                //customOptions = () => { return MacroType.cachedMacros; },
             },
             new MacroProperty()
             {
@@ -105,7 +108,7 @@ namespace MacroMan.MacroActions
                 name = IntegerProperties.first_source_macro_key.ToString(),
                 id = (int)IntegerProperties.first_source_macro_key,
                 type = PropertyType.stringed_value,
-                value = null,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()
@@ -121,7 +124,7 @@ namespace MacroMan.MacroActions
                 name = IntegerProperties.second_source_key.ToString(),
                 id = (int)IntegerProperties.second_source_key,
                 type = PropertyType.stringed_value,
-                value = null,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()
@@ -137,7 +140,7 @@ namespace MacroMan.MacroActions
                 name = IntegerProperties.second_source_macro_key.ToString(),
                 id = (int)IntegerProperties.second_source_macro_key,
                 type = PropertyType.stringed_value,
-                value = null,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()
@@ -153,7 +156,7 @@ namespace MacroMan.MacroActions
                 name = IntegerProperties.result_source_key.ToString(),
                 id = (int)IntegerProperties.result_source_key,
                 type = PropertyType.stringed_value,
-                value = null,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()
@@ -168,8 +171,8 @@ namespace MacroMan.MacroActions
             {
                 name = IntegerProperties.result_source_macro_key.ToString(),
                 id = (int)IntegerProperties.result_source_macro_key,
-                type = PropertyType.integer,
-                value = null,
+                type = PropertyType.stringed_value,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()
@@ -177,44 +180,52 @@ namespace MacroMan.MacroActions
                 name = IntegerProperties.first_source.ToString(),
                 id = (int)IntegerProperties.first_source,
                 type = PropertyType.integer,
-                value = 0,
+                value = DataSource.Self,
                 readOnly = false,
+                customOptions = () => { return Enum.GetValues(typeof(DataSource)); },
             },
             new MacroProperty()
             {
                 name = IntegerProperties.second_source.ToString(),
                 id = (int)IntegerProperties.second_source,
                 type = PropertyType.integer,
-                value = 0,
+                value = DataSource.Self,
                 readOnly = false,
+                customOptions = () => { return Enum.GetValues(typeof(DataSource)); },
             },
             new MacroProperty()
             {
                 name = IntegerProperties.result_source.ToString(),
                 id = (int)IntegerProperties.result_source,
                 type = PropertyType.integer,
-                value = 0,
+                value = DataSource.Self,
                 readOnly = false,
+                customOptions = () => { return Enum.GetValues(typeof(DataSource)); },
             },
         };
 
-        /*public static Dictionary<int, string> GetProperties()
-        {
-            return EnumToDictionary(typeof(IntegerProperties));
-        }
-        public static Dictionary<int, string> GetActions()
-        {
-            return EnumToDictionary(typeof(IntegerAction));
-        }*/
-        public static Array GetProperties()
+        public IntegerMacro() : base() { }
+        public IntegerMacro(MacroType other) : base(other) { }
+
+        public override Array GetProperties()
         {
             return Enum.GetValues(typeof(IntegerProperties));
         }
-        public static Array GetActions()
+        public override Array GetShownProperties()
+        {
+            var allProperties = (IntegerProperties[])Enum.GetValues(typeof(IntegerProperties));
+            List<IntegerProperties> shownProperties = new List<IntegerProperties>();
+            for (int i = 0; i < allProperties.Length; i++)
+            {
+                if (!GetProperty((int)allProperties[i]).readOnly)
+                    shownProperties.Add(allProperties[i]);
+            }
+            return shownProperties.ToArray();
+        }
+        public override Array GetActions()
         {
             return Enum.GetValues(typeof(IntegerAction));
         }
-
         public override void SetAction(int actionId)
         {
             executedAction = (IntegerAction)actionId;
@@ -294,19 +305,19 @@ namespace MacroMan.MacroActions
                 MacroType resultMacroSource = TryGetMacro(resultSourceMacroKey, firstSourceMacroId);
 
                 int firstValue = 0;
-                if ((firstSource & DataSource.self) != 0)
+                if ((firstSource & DataSource.Self) != 0)
                     firstValue = (int)TryGetProperty(firstSourceKey, firstSourceId).value;
-                else if ((firstSource & DataSource.macro) != 0)
+                else if ((firstSource & DataSource.Macro) != 0)
                     firstValue = Convert.ToInt32(firstMacroSource.TryGetProperty(firstSourceKey, firstSourceId).value);
-                else if ((firstSource & DataSource.database) != 0)
+                else if ((firstSource & DataSource.Database) != 0)
                     firstValue = ValuesDatabase.TryGetInteger(firstSourceKey, firstSourceId);
 
                 int secondValue = 0;
-                if ((secondSource & DataSource.self) != 0)
+                if ((secondSource & DataSource.Self) != 0)
                     secondValue = (int)TryGetProperty(secondSourceKey, secondSourceId).value;
-                else if ((secondSource & DataSource.macro) != 0)
+                else if ((secondSource & DataSource.Macro) != 0)
                     secondValue = Convert.ToInt32(secondMacroSource.TryGetProperty(secondSourceKey, secondSourceId).value);
-                else if ((secondSource & DataSource.database) != 0)
+                else if ((secondSource & DataSource.Database) != 0)
                     secondValue = ValuesDatabase.TryGetInteger(secondSourceKey, secondSourceId);
 
                 int resultValue = 0;
@@ -329,11 +340,11 @@ namespace MacroMan.MacroActions
                         break;
                 }
 
-                if ((resultSource & DataSource.self) != 0)
+                if ((resultSource & DataSource.Self) != 0)
                     TrySetPropertyValue(resultSourceKey, resultSourceId, resultValue);
-                if ((resultSource & DataSource.macro) != 0)
+                if ((resultSource & DataSource.Macro) != 0)
                     resultMacroSource.TrySetPropertyValue(resultSourceKey, resultSourceId, resultValue);
-                if ((resultSource & DataSource.database) != 0)
+                if ((resultSource & DataSource.Database) != 0)
                     ValuesDatabase.TrySetInteger(resultSourceKey, resultSourceId, resultValue);
             }
             catch (Exception e) { error = 1; errorMessage = e.ToString(); }
