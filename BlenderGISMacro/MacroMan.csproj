@@ -49,13 +49,16 @@
     <Compile Include="MacroActions\Enums\BooleanValue.cs" />
     <Compile Include="MacroActions\Enums\DataSource.cs" />
     <Compile Include="MacroActions\Enums\Macro.cs" />
+    <Compile Include="MacroActions\Enums\MouseButton.cs" />
     <Compile Include="MacroActions\Enums\PropertyType.cs" />
     <Compile Include="MacroActions\IntegerValue.cs" />
+    <Compile Include="MacroActions\MouseMacro.cs" />
     <Compile Include="MacroActions\StringedValue.cs" />
     <Compile Include="MacroActions\TimeMacro.cs" />
     <Compile Include="MacroActions\ValuesDatabase.cs" />
     <Compile Include="MacroActions\MacroProperty.cs" />
     <Compile Include="MacroActions\IntegerMacro.cs" />
+    <Compile Include="MacroActions\WindowMacro.cs" />
     <Compile Include="WindowsValues\KeyEventF.cs" />
     <Compile Include="WindowsValues\ShowWindowCmd.cs" />
     <Compile Include="WindowsValues\VirtualKey.cs" />

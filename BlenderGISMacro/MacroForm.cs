@@ -176,8 +176,9 @@ namespace MacroMan
         }
         private void RefreshPropertyOptions()
         {
+            var fauxType = MacroType.GetMacroType(faux);
             int propertyId = GetCurrentPropertyId();
-            Array propertyOptions = MacroType.GetPropertyOptions(GetCurrentMacroType(), propertyId);
+            Array propertyOptions = MacroType.GetPropertyOptions(fauxType, propertyId);
             bool hasOptions = propertyOptions != null;
             propertyOptionsPanel.Enabled = hasOptions;
             propertyOptionsPanel.Visible = hasOptions;
@@ -211,12 +212,13 @@ namespace MacroMan
         {
             faux = MacroType.GenerateFauxMacro(GetCurrentMacroType());
             addToListButton.Enabled = true;
+            macroNameTextBox.Enabled = true;
             RefreshFauxDisplay();
         }
 
         private void AddMacro(MacroType macro)
         {
-            MacroType newMacro = MacroType.GenerateMacro(GetCurrentMacroType(), macro);
+            MacroType newMacro = MacroType.GenerateMacro(MacroType.GetMacroType(macro), macro);
             macrosListBox.Items.Add(newMacro);
             addToListButton.Enabled = false;
             RefreshFauxDisplay();
@@ -241,6 +243,8 @@ namespace MacroMan
         {
             faux = (MacroType)macrosListBox.SelectedItem;
             addToListButton.Enabled = false;
+            macroNameTextBox.Enabled = false;
+            //RefreshPropertyOptions();
             RefreshFauxDisplay();
         }
 
@@ -375,6 +379,7 @@ namespace MacroMan
             if (macrosListBox.Items.Count > 0)
             {
                 macrosListBox.Enabled = false;
+                macrosListBox.SelectedIndex = -1;
 
                 MacroType[] sequence = new MacroType[macrosListBox.Items.Count];
                 for (int i = 0; i < sequence.Length; i++)

@@ -2,8 +2,10 @@
 {
     public enum Macro
     {
-        Keyboard,
         Integer,
+        Keyboard,
+        Mouse,
         Time,
+        Window,
     }
 }

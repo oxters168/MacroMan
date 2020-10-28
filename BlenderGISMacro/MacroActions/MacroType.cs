@@ -96,6 +96,11 @@ namespace MacroMan.MacroActions
                 macroType = Macro.Integer;
             else if (macro is TimeMacro)
                 macroType = Macro.Time;
+            else if (macro is MouseMacro)
+                macroType = Macro.Mouse;
+            else if (macro is WindowMacro)
+                macroType = Macro.Window;
+
             return macroType;
         }
         public static MacroType GenerateMacro(Macro macroType, MacroType toClone = null)
@@ -120,6 +125,18 @@ namespace MacroMan.MacroActions
                         macro = new TimeMacro(toClone);
                     else
                         macro = new TimeMacro();
+                    break;
+                case Macro.Mouse:
+                    if (toClone != null)
+                        macro = new MouseMacro(toClone);
+                    else
+                        macro = new MouseMacro();
+                    break;
+                case Macro.Window:
+                    if (toClone != null)
+                        macro = new WindowMacro(toClone);
+                    else
+                        macro = new WindowMacro();
                     break;
             }
             return macro;
