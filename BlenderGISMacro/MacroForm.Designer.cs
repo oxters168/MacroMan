@@ -36,6 +36,10 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.macroEditorPanel = new System.Windows.Forms.Panel();
             this.macroDataSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.gotoMacroPanel = new System.Windows.Forms.Panel();
+            this.gotoMacroCheckBox = new System.Windows.Forms.CheckBox();
+            this.gotoMacroComboBox = new System.Windows.Forms.ComboBox();
+            this.gotoMacroLabel = new System.Windows.Forms.Label();
             this.startConditionPanel = new System.Windows.Forms.Panel();
             this.startConditionSecondMacroIdComboBox = new System.Windows.Forms.ComboBox();
             this.startConditionFirstMacroIdComboBox = new System.Windows.Forms.ComboBox();
@@ -65,10 +69,14 @@
             this.deleteButton = new System.Windows.Forms.Button();
             this.shiftMacroDownButton = new System.Windows.Forms.Button();
             this.shiftMacroUpButton = new System.Windows.Forms.Button();
-            this.gotoMacroPanel = new System.Windows.Forms.Panel();
-            this.gotoMacroLabel = new System.Windows.Forms.Label();
-            this.gotoMacroComboBox = new System.Windows.Forms.ComboBox();
-            this.gotoMacroCheckBox = new System.Windows.Forms.CheckBox();
+            this.menuToolStrip = new System.Windows.Forms.ToolStrip();
+            this.fileToolStripDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.integersDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stringsDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -78,10 +86,11 @@
             this.macroDataSplitContainer.Panel1.SuspendLayout();
             this.macroDataSplitContainer.Panel2.SuspendLayout();
             this.macroDataSplitContainer.SuspendLayout();
+            this.gotoMacroPanel.SuspendLayout();
             this.startConditionPanel.SuspendLayout();
             this.actionOptionsPanel.SuspendLayout();
             this.propertyValuePanel.SuspendLayout();
-            this.gotoMacroPanel.SuspendLayout();
+            this.menuToolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // notifyIcon1
@@ -99,7 +108,7 @@
             this.macrosListBox.IntegralHeight = false;
             this.macrosListBox.Location = new System.Drawing.Point(3, 3);
             this.macrosListBox.Name = "macrosListBox";
-            this.macrosListBox.Size = new System.Drawing.Size(127, 335);
+            this.macrosListBox.Size = new System.Drawing.Size(127, 369);
             this.macrosListBox.TabIndex = 22;
             this.macrosListBox.SelectedIndexChanged += new System.EventHandler(this.macrosListBox_SelectedIndexChanged);
             this.macrosListBox.DoubleClick += new System.EventHandler(this.macrosListBox_DoubleClick);
@@ -111,7 +120,7 @@
             this.macrosComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.macrosComboBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.macrosComboBox.FormattingEnabled = true;
-            this.macrosComboBox.Location = new System.Drawing.Point(3, 339);
+            this.macrosComboBox.Location = new System.Drawing.Point(3, 343);
             this.macrosComboBox.Name = "macrosComboBox";
             this.macrosComboBox.Size = new System.Drawing.Size(75, 21);
             this.macrosComboBox.TabIndex = 0;
@@ -125,7 +134,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.splitContainer1.Location = new System.Drawing.Point(12, 12);
+            this.splitContainer1.Location = new System.Drawing.Point(12, 28);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -139,7 +148,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.shiftMacroDownButton);
             this.splitContainer1.Panel2.Controls.Add(this.shiftMacroUpButton);
             this.splitContainer1.Panel2.Controls.Add(this.macrosListBox);
-            this.splitContainer1.Size = new System.Drawing.Size(443, 373);
+            this.splitContainer1.Size = new System.Drawing.Size(443, 379);
             this.splitContainer1.SplitterDistance = 302;
             this.splitContainer1.TabIndex = 24;
             // 
@@ -154,7 +163,7 @@
             this.macroEditorPanel.Controls.Add(this.macrosComboBox);
             this.macroEditorPanel.Location = new System.Drawing.Point(3, 3);
             this.macroEditorPanel.Name = "macroEditorPanel";
-            this.macroEditorPanel.Size = new System.Drawing.Size(292, 363);
+            this.macroEditorPanel.Size = new System.Drawing.Size(292, 369);
             this.macroEditorPanel.TabIndex = 23;
             // 
             // macroDataSplitContainer
@@ -180,9 +189,55 @@
             // 
             this.macroDataSplitContainer.Panel2.Controls.Add(this.macroPropertiesListBox);
             this.macroDataSplitContainer.Panel2.Controls.Add(this.macroPropertiesLabel);
-            this.macroDataSplitContainer.Size = new System.Drawing.Size(292, 335);
+            this.macroDataSplitContainer.Size = new System.Drawing.Size(292, 337);
             this.macroDataSplitContainer.SplitterDistance = 134;
             this.macroDataSplitContainer.TabIndex = 7;
+            // 
+            // gotoMacroPanel
+            // 
+            this.gotoMacroPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gotoMacroPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.gotoMacroPanel.Controls.Add(this.gotoMacroCheckBox);
+            this.gotoMacroPanel.Controls.Add(this.gotoMacroComboBox);
+            this.gotoMacroPanel.Controls.Add(this.gotoMacroLabel);
+            this.gotoMacroPanel.Location = new System.Drawing.Point(2, 290);
+            this.gotoMacroPanel.Name = "gotoMacroPanel";
+            this.gotoMacroPanel.Size = new System.Drawing.Size(127, 41);
+            this.gotoMacroPanel.TabIndex = 11;
+            // 
+            // gotoMacroCheckBox
+            // 
+            this.gotoMacroCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gotoMacroCheckBox.AutoSize = true;
+            this.gotoMacroCheckBox.Location = new System.Drawing.Point(3, 19);
+            this.gotoMacroCheckBox.Name = "gotoMacroCheckBox";
+            this.gotoMacroCheckBox.Size = new System.Drawing.Size(15, 14);
+            this.gotoMacroCheckBox.TabIndex = 18;
+            this.gotoMacroCheckBox.UseVisualStyleBackColor = true;
+            this.gotoMacroCheckBox.Click += new System.EventHandler(this.gotoMacroCheckBox_Click);
+            // 
+            // gotoMacroComboBox
+            // 
+            this.gotoMacroComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.gotoMacroComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.gotoMacroComboBox.FormattingEnabled = true;
+            this.gotoMacroComboBox.Location = new System.Drawing.Point(24, 15);
+            this.gotoMacroComboBox.Name = "gotoMacroComboBox";
+            this.gotoMacroComboBox.Size = new System.Drawing.Size(98, 21);
+            this.gotoMacroComboBox.TabIndex = 7;
+            this.gotoMacroComboBox.SelectionChangeCommitted += new System.EventHandler(this.gotoMacroComboBox_SelectionChangeCommitted);
+            // 
+            // gotoMacroLabel
+            // 
+            this.gotoMacroLabel.AutoSize = true;
+            this.gotoMacroLabel.Location = new System.Drawing.Point(3, 0);
+            this.gotoMacroLabel.Name = "gotoMacroLabel";
+            this.gotoMacroLabel.Size = new System.Drawing.Size(36, 13);
+            this.gotoMacroLabel.TabIndex = 10;
+            this.gotoMacroLabel.Text = "Go to:";
             // 
             // startConditionPanel
             // 
@@ -202,7 +257,7 @@
             this.startConditionPanel.Controls.Add(this.startConditionFirstSourceComboBox);
             this.startConditionPanel.Location = new System.Drawing.Point(2, 42);
             this.startConditionPanel.Name = "startConditionPanel";
-            this.startConditionPanel.Size = new System.Drawing.Size(127, 159);
+            this.startConditionPanel.Size = new System.Drawing.Size(127, 161);
             this.startConditionPanel.TabIndex = 12;
             // 
             // startConditionSecondMacroIdComboBox
@@ -325,7 +380,7 @@
             this.actionOptionsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.actionOptionsPanel.Controls.Add(this.macroActionComboBox);
             this.actionOptionsPanel.Controls.Add(this.macroActionsLabel);
-            this.actionOptionsPanel.Location = new System.Drawing.Point(2, 203);
+            this.actionOptionsPanel.Location = new System.Drawing.Point(2, 204);
             this.actionOptionsPanel.Name = "actionOptionsPanel";
             this.actionOptionsPanel.Size = new System.Drawing.Size(127, 41);
             this.actionOptionsPanel.TabIndex = 11;
@@ -359,7 +414,7 @@
             this.propertyValuePanel.Controls.Add(this.propertyOptionsComboBox);
             this.propertyValuePanel.Controls.Add(this.propertyValueLabel);
             this.propertyValuePanel.Controls.Add(this.propertyValueTextBox);
-            this.propertyValuePanel.Location = new System.Drawing.Point(2, 246);
+            this.propertyValuePanel.Location = new System.Drawing.Point(2, 247);
             this.propertyValuePanel.Name = "propertyValuePanel";
             this.propertyValuePanel.Size = new System.Drawing.Size(127, 41);
             this.propertyValuePanel.TabIndex = 9;
@@ -436,7 +491,7 @@
             this.macroPropertiesListBox.IntegralHeight = false;
             this.macroPropertiesListBox.Location = new System.Drawing.Point(3, 17);
             this.macroPropertiesListBox.Name = "macroPropertiesListBox";
-            this.macroPropertiesListBox.Size = new System.Drawing.Size(146, 313);
+            this.macroPropertiesListBox.Size = new System.Drawing.Size(146, 315);
             this.macroPropertiesListBox.TabIndex = 1;
             this.macroPropertiesListBox.SelectedIndexChanged += new System.EventHandler(this.macroPropertiesListBox_SelectedIndexChanged);
             // 
@@ -453,7 +508,7 @@
             // 
             this.addToListButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.addToListButton.Enabled = false;
-            this.addToListButton.Location = new System.Drawing.Point(214, 337);
+            this.addToListButton.Location = new System.Drawing.Point(213, 341);
             this.addToListButton.Name = "addToListButton";
             this.addToListButton.Size = new System.Drawing.Size(75, 23);
             this.addToListButton.TabIndex = 2;
@@ -464,7 +519,7 @@
             // newButton
             // 
             this.newButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.newButton.Location = new System.Drawing.Point(3, 337);
+            this.newButton.Location = new System.Drawing.Point(3, 343);
             this.newButton.Name = "newButton";
             this.newButton.Size = new System.Drawing.Size(75, 23);
             this.newButton.TabIndex = 1;
@@ -475,7 +530,7 @@
             // playButton
             // 
             this.playButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.playButton.Location = new System.Drawing.Point(107, 340);
+            this.playButton.Location = new System.Drawing.Point(107, 389);
             this.playButton.Name = "playButton";
             this.playButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.playButton.Size = new System.Drawing.Size(23, 23);
@@ -488,7 +543,7 @@
             // deleteButton
             // 
             this.deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.deleteButton.Location = new System.Drawing.Point(61, 340);
+            this.deleteButton.Location = new System.Drawing.Point(61, 389);
             this.deleteButton.Name = "deleteButton";
             this.deleteButton.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.deleteButton.Size = new System.Drawing.Size(23, 23);
@@ -501,7 +556,7 @@
             // shiftMacroDownButton
             // 
             this.shiftMacroDownButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.shiftMacroDownButton.Location = new System.Drawing.Point(32, 340);
+            this.shiftMacroDownButton.Location = new System.Drawing.Point(32, 389);
             this.shiftMacroDownButton.Name = "shiftMacroDownButton";
             this.shiftMacroDownButton.Size = new System.Drawing.Size(23, 23);
             this.shiftMacroDownButton.TabIndex = 23;
@@ -513,7 +568,7 @@
             // shiftMacroUpButton
             // 
             this.shiftMacroUpButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.shiftMacroUpButton.Location = new System.Drawing.Point(3, 340);
+            this.shiftMacroUpButton.Location = new System.Drawing.Point(3, 389);
             this.shiftMacroUpButton.Name = "shiftMacroUpButton";
             this.shiftMacroUpButton.Size = new System.Drawing.Size(23, 23);
             this.shiftMacroUpButton.TabIndex = 8;
@@ -522,57 +577,103 @@
             this.shiftMacroUpButton.UseVisualStyleBackColor = true;
             this.shiftMacroUpButton.Click += new System.EventHandler(this.shiftMacroUpButton_Click);
             // 
-            // gotoMacroPanel
+            // menuToolStrip
             // 
-            this.gotoMacroPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.gotoMacroPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.gotoMacroPanel.Controls.Add(this.gotoMacroCheckBox);
-            this.gotoMacroPanel.Controls.Add(this.gotoMacroComboBox);
-            this.gotoMacroPanel.Controls.Add(this.gotoMacroLabel);
-            this.gotoMacroPanel.Location = new System.Drawing.Point(2, 289);
-            this.gotoMacroPanel.Name = "gotoMacroPanel";
-            this.gotoMacroPanel.Size = new System.Drawing.Size(127, 41);
-            this.gotoMacroPanel.TabIndex = 11;
+            this.menuToolStrip.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.menuToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.menuToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripDropDownButton,
+            this.editToolStripDropDownButton});
+            this.menuToolStrip.Location = new System.Drawing.Point(0, 0);
+            this.menuToolStrip.Name = "menuToolStrip";
+            this.menuToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.menuToolStrip.ShowItemToolTips = false;
+            this.menuToolStrip.Size = new System.Drawing.Size(467, 25);
+            this.menuToolStrip.TabIndex = 25;
+            this.menuToolStrip.Text = "toolStrip1";
             // 
-            // gotoMacroLabel
+            // fileToolStripDropDownButton
             // 
-            this.gotoMacroLabel.AutoSize = true;
-            this.gotoMacroLabel.Location = new System.Drawing.Point(3, 0);
-            this.gotoMacroLabel.Name = "gotoMacroLabel";
-            this.gotoMacroLabel.Size = new System.Drawing.Size(36, 13);
-            this.gotoMacroLabel.TabIndex = 10;
-            this.gotoMacroLabel.Text = "Go to:";
+            this.fileToolStripDropDownButton.AutoSize = false;
+            this.fileToolStripDropDownButton.AutoToolTip = false;
+            this.fileToolStripDropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.fileToolStripDropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.saveAsToolStripMenuItem,
+            this.loadToolStripMenuItem});
+            this.fileToolStripDropDownButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.fileToolStripDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.fileToolStripDropDownButton.Name = "fileToolStripDropDownButton";
+            this.fileToolStripDropDownButton.ShowDropDownArrow = false;
+            this.fileToolStripDropDownButton.Size = new System.Drawing.Size(29, 22);
+            this.fileToolStripDropDownButton.Text = "File";
+            this.fileToolStripDropDownButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.fileToolStripDropDownButton.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             // 
-            // gotoMacroComboBox
+            // saveToolStripMenuItem
             // 
-            this.gotoMacroComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.gotoMacroComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.gotoMacroComboBox.FormattingEnabled = true;
-            this.gotoMacroComboBox.Location = new System.Drawing.Point(24, 15);
-            this.gotoMacroComboBox.Name = "gotoMacroComboBox";
-            this.gotoMacroComboBox.Size = new System.Drawing.Size(98, 21);
-            this.gotoMacroComboBox.TabIndex = 7;
-            this.gotoMacroComboBox.SelectionChangeCommitted += new System.EventHandler(this.gotoMacroComboBox_SelectionChangeCommitted);
+            this.saveToolStripMenuItem.AutoSize = false;
+            this.saveToolStripMenuItem.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.saveToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.saveToolStripMenuItem.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.saveToolStripMenuItem.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
-            // gotoMacroCheckBox
+            // loadToolStripMenuItem
             // 
-            this.gotoMacroCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.gotoMacroCheckBox.AutoSize = true;
-            this.gotoMacroCheckBox.Location = new System.Drawing.Point(3, 19);
-            this.gotoMacroCheckBox.Name = "gotoMacroCheckBox";
-            this.gotoMacroCheckBox.Size = new System.Drawing.Size(15, 14);
-            this.gotoMacroCheckBox.TabIndex = 18;
-            this.gotoMacroCheckBox.UseVisualStyleBackColor = true;
-            this.gotoMacroCheckBox.Click += new System.EventHandler(this.gotoMacroCheckBox_Click);
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.loadToolStripMenuItem.Text = "Open";
+            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
+            // 
+            // editToolStripDropDownButton
+            // 
+            this.editToolStripDropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.editToolStripDropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.integersDatabaseToolStripMenuItem,
+            this.stringsDatabaseToolStripMenuItem});
+            this.editToolStripDropDownButton.Image = ((System.Drawing.Image)(resources.GetObject("editToolStripDropDownButton.Image")));
+            this.editToolStripDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.editToolStripDropDownButton.Name = "editToolStripDropDownButton";
+            this.editToolStripDropDownButton.ShowDropDownArrow = false;
+            this.editToolStripDropDownButton.Size = new System.Drawing.Size(31, 22);
+            this.editToolStripDropDownButton.Text = "Edit";
+            // 
+            // integersDatabaseToolStripMenuItem
+            // 
+            this.integersDatabaseToolStripMenuItem.Name = "integersDatabaseToolStripMenuItem";
+            this.integersDatabaseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.integersDatabaseToolStripMenuItem.Text = "Integers Database";
+            this.integersDatabaseToolStripMenuItem.Click += new System.EventHandler(this.integersDatabaseToolStripMenuItem_Click);
+            // 
+            // stringsDatabaseToolStripMenuItem
+            // 
+            this.stringsDatabaseToolStripMenuItem.Name = "stringsDatabaseToolStripMenuItem";
+            this.stringsDatabaseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.stringsDatabaseToolStripMenuItem.Text = "Strings Database";
+            this.stringsDatabaseToolStripMenuItem.Click += new System.EventHandler(this.stringsDatabaseToolStripMenuItem_Click);
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // MacroForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(467, 395);
+            this.ClientSize = new System.Drawing.Size(467, 417);
+            this.Controls.Add(this.menuToolStrip);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MacroForm";
@@ -590,15 +691,18 @@
             this.macroDataSplitContainer.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.macroDataSplitContainer)).EndInit();
             this.macroDataSplitContainer.ResumeLayout(false);
+            this.gotoMacroPanel.ResumeLayout(false);
+            this.gotoMacroPanel.PerformLayout();
             this.startConditionPanel.ResumeLayout(false);
             this.startConditionPanel.PerformLayout();
             this.actionOptionsPanel.ResumeLayout(false);
             this.actionOptionsPanel.PerformLayout();
             this.propertyValuePanel.ResumeLayout(false);
             this.propertyValuePanel.PerformLayout();
-            this.gotoMacroPanel.ResumeLayout(false);
-            this.gotoMacroPanel.PerformLayout();
+            this.menuToolStrip.ResumeLayout(false);
+            this.menuToolStrip.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -643,6 +747,14 @@
         private System.Windows.Forms.CheckBox gotoMacroCheckBox;
         private System.Windows.Forms.ComboBox gotoMacroComboBox;
         private System.Windows.Forms.Label gotoMacroLabel;
+        private System.Windows.Forms.ToolStrip menuToolStrip;
+        private System.Windows.Forms.ToolStripDropDownButton fileToolStripDropDownButton;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripDropDownButton editToolStripDropDownButton;
+        private System.Windows.Forms.ToolStripMenuItem integersDatabaseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stringsDatabaseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
     }
 }
 

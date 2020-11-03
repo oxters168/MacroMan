@@ -240,9 +240,9 @@ namespace MacroMan.MacroActions
                 var firstSource = (DataSource)GetProperty((int)BooleanProperties.first_source).value;
                 var secondSource = (DataSource)GetProperty((int)BooleanProperties.second_source).value;
                 var resultSource = (DataSource)GetProperty((int)BooleanProperties.result_source).value;
-                int firstSourceId = (int)GetProperty((int)BooleanProperties.first_source_id).value;
-                int secondSourceId = (int)GetProperty((int)BooleanProperties.second_source_id).value;
-                int resultSourceId = (int)GetProperty((int)BooleanProperties.result_source_id).value;
+                object firstSourceId = GetProperty((int)BooleanProperties.first_source_id).value;
+                object secondSourceId = GetProperty((int)BooleanProperties.second_source_id).value;
+                object resultSourceId = GetProperty((int)BooleanProperties.result_source_id).value;
                 int firstSourceMacroId = (int)GetProperty((int)BooleanProperties.first_source_macro_id).value;
                 int secondSourceMacroId = (int)GetProperty((int)BooleanProperties.second_source_macro_id).value;
                 int resultSourceMacroId = (int)GetProperty((int)BooleanProperties.result_source_macro_id).value;
@@ -255,17 +255,27 @@ namespace MacroMan.MacroActions
                 if ((firstSource & DataSource.Self) != 0)
                     firstValue = (int)GetProperty((int)BooleanProperties.first_value).value;
                 else if ((firstSource & DataSource.Macro) != 0)
-                    firstValue = Convert.ToInt32(firstMacroSource.GetProperty(firstSourceId).value);
+                    firstValue = Convert.ToInt32(firstMacroSource.GetProperty((int)firstSourceId).value);
                 else if ((firstSource & DataSource.Database) != 0)
-                    firstValue = ValuesDatabase.GetInteger(firstSourceId);
+                {
+                    if (firstSourceId is string)
+                        firstValue = ValuesDatabase.GetInteger((string)firstSourceId);
+                    else
+                        firstValue = ValuesDatabase.GetInteger((int)firstSourceId);
+                }
 
                 int secondValue = 0;
                 if ((secondSource & DataSource.Self) != 0)
                     secondValue = (int)GetProperty((int)BooleanProperties.second_value).value;
                 else if ((secondSource & DataSource.Macro) != 0)
-                    secondValue = Convert.ToInt32(secondMacroSource.GetProperty(secondSourceId).value);
+                    secondValue = Convert.ToInt32(secondMacroSource.GetProperty((int)secondSourceId).value);
                 else if ((secondSource & DataSource.Database) != 0)
-                    secondValue = ValuesDatabase.GetInteger(secondSourceId);
+                {
+                    if (secondSourceId is string)
+                        secondValue = ValuesDatabase.GetInteger((string)secondSourceId);
+                    else
+                        secondValue = ValuesDatabase.GetInteger((int)secondSourceId);
+                }
 
                 bool resultValue = false;
                 switch (executedAction)
@@ -295,9 +305,14 @@ namespace MacroMan.MacroActions
                 if ((resultSource & DataSource.Self) != 0)
                     SetPropertyValue((int)BooleanProperties.result_value, resultValue ? 1 : 0);
                 if ((resultSource & DataSource.Macro) != 0)
-                    resultMacroSource.SetPropertyValue(resultSourceId, resultValue ? 1 : 0);
+                    resultMacroSource.SetPropertyValue((int)resultSourceId, resultValue ? 1 : 0);
                 if ((resultSource & DataSource.Database) != 0)
-                    ValuesDatabase.SetInteger(resultSourceId, resultValue ? 1 : 0);
+                {
+                    if (resultSourceId is string)
+                        ValuesDatabase.SetInteger((string)resultSourceId, resultValue ? 1 : 0);
+                    else
+                        ValuesDatabase.SetInteger((int)resultSourceId, resultValue ? 1 : 0);
+                }
             }
             catch (Exception e) { error = 1; errorMessage = e.ToString(); }
 

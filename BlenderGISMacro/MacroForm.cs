@@ -329,32 +329,42 @@ namespace MacroMan
         private void startConditionFirstValueTextBox_TextChanged(object sender, EventArgs e)
         {
             int value = 0;
+            bool isInt = true;
             try
             {
                 value = Convert.ToInt32(startConditionFirstValueTextBox.Text);
             }
-            catch (Exception) { }
+            catch (Exception) { isInt = false; }
 
             var source = (DataSource)faux.startingCondition.GetProperty("first_source").value;
             if (source == DataSource.Self)
+            {
                 faux.startingCondition.SetPropertyValue("first_value", value);
+                if (isInt)
+                    startConditionFirstValueTextBox.Text = value.ToString();
+            }
             else
-                faux.startingCondition.SetPropertyValue("first_source_id", value);
+                faux.startingCondition.SetPropertyValue("first_source_id", isInt ? value : (object)startConditionFirstValueTextBox.Text);
         }
         private void startConditionSecondValueTextBox_TextChanged(object sender, EventArgs e)
         {
             int value = 0;
+            bool isInt = true;
             try
             {
                 value = Convert.ToInt32(startConditionSecondValueTextBox.Text);
             }
-            catch (Exception) { }
+            catch (Exception) { isInt = false; }
 
             var source = (DataSource)faux.startingCondition.GetProperty("second_source").value;
             if (source == DataSource.Self)
+            {
                 faux.startingCondition.SetPropertyValue("second_value", value);
+                if (isInt)
+                    startConditionSecondValueTextBox.Text = value.ToString();
+            }
             else
-                faux.startingCondition.SetPropertyValue("second_source_id", value);
+                faux.startingCondition.SetPropertyValue("second_source_id", isInt ? value : (object)startConditionSecondValueTextBox.Text);
         }
 
         private void RefreshFauxDisplay()
@@ -667,6 +677,30 @@ namespace MacroMan
         {
             ToggleSequence();
         }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Console.WriteLine("Saved");
+        }
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void integersDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DatabaseBrowser browser = new DatabaseBrowser();
+            browser.SetData();
+            browser.ShowDialog();
+        }
+        private void stringsDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private async void RunSequence()
         {
             if (macrosListBox.Items.Count > 0)

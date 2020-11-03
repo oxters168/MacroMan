@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using System;
+using System.Data;
 
 namespace MacroMan.MacroActions
 {
@@ -11,8 +12,10 @@ namespace MacroMan.MacroActions
 
         private static void ExtendIfOutOfRange(int id)
         {
-            if (id >= integers.Count)
-                integers.AddRange(new IntegerValue[(id + 1) - integers.Count]);
+            while (id >= integers.Count)
+                integers.Add(new IntegerValue());
+            //if (id >= integers.Count)
+                //integers.AddRange(new IntegerValue[(id + 1) - integers.Count]);
         }
 
         public static int IntegersCount()
@@ -82,6 +85,24 @@ namespace MacroMan.MacroActions
             else
                 value = GetInteger(id);
             return value;
+        }
+        public static DataTable IntegersToDataTable()
+        {
+            DataTable integerData = new DataTable();
+            var idColumn = integerData.Columns.Add("Id", typeof(int));
+            var nameColumn = integerData.Columns.Add("Name", typeof(string));
+            var valueColumn = integerData.Columns.Add("Value", typeof(int));
+            idColumn.ReadOnly = true;
+            nameColumn.ReadOnly = false;
+            valueColumn.ReadOnly = false;
+            valueColumn.DefaultValue = 0;
+
+            for (int i = 0; i < integers.Count; i++)
+            {
+                integerData.Rows.Add(i, integers[i].name, integers[i].value);
+            }
+
+            return integerData;
         }
 
         public static int StringsCount()
