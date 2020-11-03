@@ -7,17 +7,20 @@ namespace MacroMan.MacroActions
 {
     public abstract class MacroType
     {
-        public string name = string.Empty;
-        private int uniqueId;
         private static int totalId;
         private static List<MacroType> cachedMacros = new List<MacroType>();
         private static Macro[] macroTypes = (Macro[])Enum.GetValues(typeof(Macro));
         private static MacroType[] references = new MacroType[macroTypes.Length];
 
+        public string name = string.Empty;
+        private int uniqueId;
+        public BooleanMacro startingCondition;
+
         public MacroType()
         {
             uniqueId = totalId++;
             cachedMacros.Add(this);
+            //startingCondition = (BooleanMacro)GenerateFauxMacro(Macro.Boolean);
         }
         public MacroType(MacroType other) : this()
         {
@@ -25,6 +28,8 @@ namespace MacroMan.MacroActions
             while (cachedMacros.Where(macro => macro.name.Equals(newName)).Count() > 0)
                 newName = newName + "_cp";
             name = newName;
+
+            startingCondition = other.startingCondition;
 
             SetAction(other.GetAction());
 
@@ -52,6 +57,10 @@ namespace MacroMan.MacroActions
         public static MacroType GetMacro(string key)
         {
             return cachedMacros.FirstOrDefault(macro => macro.name.Equals(key));
+        }
+        public static MacroType[] GetCachedMacros()
+        {
+            return cachedMacros.ToArray();
         }
 
         internal static MacroType TryGetMacro(string key, int id)
@@ -83,7 +92,16 @@ namespace MacroMan.MacroActions
             for (int i = 0; i < sequence.Length; i++)
             {
                 MacroType macro = sequence[i];
-                await macro.Execute();
+                var startCondition = macro.startingCondition;
+                bool execute = true;
+                if (startCondition != null)
+                {
+                    await startCondition.Execute();
+                    execute = (int)startCondition.GetProperty("result_value").value != 0;
+                }
+                
+                if (execute)
+                    await macro.Execute();
             }
         }
 
@@ -100,6 +118,8 @@ namespace MacroMan.MacroActions
                 macroType = Macro.Mouse;
             else if (macro is WindowMacro)
                 macroType = Macro.Window;
+            else if (macro is BooleanMacro)
+                macroType = Macro.Boolean;
 
             return macroType;
         }
@@ -137,6 +157,12 @@ namespace MacroMan.MacroActions
                         macro = new WindowMacro(toClone);
                     else
                         macro = new WindowMacro();
+                    break;
+                case Macro.Boolean:
+                    if (toClone != null)
+                        macro = new BooleanMacro(toClone);
+                    else
+                        macro = new BooleanMacro();
                     break;
             }
             return macro;

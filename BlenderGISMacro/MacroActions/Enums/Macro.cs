@@ -2,6 +2,7 @@
 {
     public enum Macro
     {
+        Boolean,
         Integer,
         Keyboard,
         Mouse,

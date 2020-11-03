@@ -15,6 +15,10 @@ namespace MacroMan.MacroActions
                 integers.AddRange(new IntegerValue[(id + 1) - integers.Count]);
         }
 
+        public static int IntegersCount()
+        {
+            return integers.Count;
+        }
         public static void SetInteger(string key, int value)
         {
             int currentCount = integers.Count;
@@ -80,6 +84,10 @@ namespace MacroMan.MacroActions
             return value;
         }
 
+        public static int StringsCount()
+        {
+            return stringedValues.Count;
+        }
         public static void SetString(string key, string value)
         {
             int currentCount = stringedValues.Count;

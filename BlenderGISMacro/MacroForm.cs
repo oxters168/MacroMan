@@ -33,7 +33,9 @@ namespace MacroMan
             startTime = DateTime.Now.Ticks / 10000000d;
 
             macrosComboBox.DataSource = Enum.GetValues(typeof(Macro));
+            SetupStaticComboboxes();
             RefreshFauxDisplay();
+            RefreshStartConditionControls();
         }
         private async void FrameRunner(CancellationToken cancellationToken)
         {
@@ -97,6 +99,29 @@ namespace MacroMan
         {
             return (int)macroPropertiesListBox.SelectedItem;
         }
+        private bool IsCurrentPropertyPointer()
+        {
+            var fauxType = MacroType.GetMacroType(faux);
+            int propertyId = GetCurrentPropertyId();
+            MacroProperty prop = faux.GetProperty(propertyId);
+
+            string propStart = GetCurrentPropertyPointerStart();
+            return (fauxType == Macro.Boolean || fauxType == Macro.Integer) && prop.name.Contains(propStart + "_source_") && (DataSource)faux.GetProperty(propStart + "_source").value == DataSource.Macro;
+        }
+        private bool IsCurrentPropertyMacroId()
+        {
+            int propertyId = GetCurrentPropertyId();
+            MacroProperty prop = faux.GetProperty(propertyId);
+
+            return prop.name.Contains("macro_id");
+        }
+        private string GetCurrentPropertyPointerStart()
+        {
+            int propertyId = GetCurrentPropertyId();
+            MacroProperty prop = faux.GetProperty(propertyId);
+
+            return prop.name.Contains("first") ? "first" : prop.name.Contains("second") ? "second" : "result";
+        }
 
         private void MacroForm_Resize(object sender, EventArgs e)
         {
@@ -150,6 +175,187 @@ namespace MacroMan
             }
         }*/
 
+        private void SetupStaticComboboxes()
+        {
+            startConditionFirstSourceComboBox.DataSource = Enum.GetValues(typeof(DataSource));
+            startConditionSecondSourceComboBox.DataSource = Enum.GetValues(typeof(DataSource));
+            startConditionOperationComboBox.DataSource = Enum.GetValues(typeof(BooleanOperations));
+        }
+        private void RefreshStartConditionControls()
+        {
+            bool hasStartCondition = faux != null && faux.startingCondition != null;
+            hasStartConditionCheckBox.Checked = hasStartCondition;
+            startConditionFirstValueComboBox.Enabled = hasStartCondition;
+            startConditionFirstSourceComboBox.Enabled = hasStartCondition;
+            startConditionFirstValueTextBox.Enabled = hasStartCondition;
+            startConditionFirstMacroIdComboBox.Enabled = hasStartCondition;
+            startConditionOperationComboBox.Enabled = hasStartCondition;
+            startConditionSecondValueComboBox.Enabled = hasStartCondition;
+            startConditionSecondSourceComboBox.Enabled = hasStartCondition;
+            startConditionSecondValueTextBox.Enabled = hasStartCondition;
+            startConditionSecondMacroIdComboBox.Enabled = hasStartCondition;
+
+            if (hasStartCondition)
+            {
+                startConditionOperationComboBox.SelectedItem = (BooleanOperations)faux.startingCondition.GetProperty("operation").value;
+
+                var firstSource = (DataSource)faux.startingCondition.GetProperty("first_source").value;
+                startConditionFirstSourceComboBox.SelectedItem = firstSource;
+                bool firstSourceIsMacro = firstSource == DataSource.Macro;
+                startConditionFirstMacroIdComboBox.Enabled = firstSourceIsMacro;
+
+                startConditionFirstValueTextBox.Enabled = !firstSourceIsMacro;
+                startConditionFirstValueTextBox.Visible = !firstSourceIsMacro;
+
+                startConditionFirstValueComboBox.Enabled = firstSourceIsMacro;
+                startConditionFirstValueComboBox.Visible = firstSourceIsMacro;
+                if (firstSource == DataSource.Macro)
+                {
+                    var allMacros = MacroType.GetCachedMacros();
+
+                    var macro = MacroType.GetMacro((int)faux.startingCondition.GetProperty("first_source_macro_id").value);
+
+                    startConditionFirstMacroIdComboBox.DataSource = allMacros;
+                    startConditionFirstMacroIdComboBox.SelectedItem = macro;
+
+                    if (macro != null)
+                    {
+                        var propertyOptions = macro.GetProperties();
+                        var propId = faux.startingCondition.GetProperty("first_source_id").value;
+                        int selectedIndex = -1;
+                        for (int i = 0; i < propertyOptions.Length; i++)
+                        {
+                            if ((int)propId == (int)propertyOptions.GetValue(i))
+                            {
+                                selectedIndex = i;
+                                break;
+                            }
+                        }
+
+                        startConditionFirstValueComboBox.DataSource = propertyOptions;
+                        startConditionFirstValueComboBox.SelectedIndex = selectedIndex;
+                    }
+                }
+
+                var secondSource = (DataSource)faux.startingCondition.GetProperty("second_source").value;
+                startConditionSecondSourceComboBox.SelectedItem = secondSource;
+                bool secondSourceIsMacro = secondSource == DataSource.Macro;
+                startConditionSecondMacroIdComboBox.Enabled = secondSourceIsMacro;
+
+                startConditionSecondValueTextBox.Enabled = !secondSourceIsMacro;
+                startConditionSecondValueTextBox.Visible = !secondSourceIsMacro;
+
+                startConditionSecondValueComboBox.Enabled = secondSourceIsMacro;
+                startConditionSecondValueComboBox.Visible = secondSourceIsMacro;
+                if (secondSource == DataSource.Macro)
+                {
+                    var allMacros = MacroType.GetCachedMacros(); //We create a new instance of allMacros since not doing so causes the comboboxes to change together when one changes
+
+                    var macro = MacroType.GetMacro((int)faux.startingCondition.GetProperty("second_source_macro_id").value);
+                    startConditionSecondMacroIdComboBox.DataSource = allMacros;
+                    startConditionSecondMacroIdComboBox.SelectedItem = macro;
+
+                    if (macro != null)
+                    {
+                        var propertyOptions = macro.GetProperties();
+                        var propId = faux.startingCondition.GetProperty("second_source_id").value;
+                        int selectedIndex = -1;
+                        for (int i = 0; i < propertyOptions.Length; i++)
+                        {
+                            if ((int)propId == (int)propertyOptions.GetValue(i))
+                            {
+                                selectedIndex = i;
+                                break;
+                            }
+                        }
+
+                        startConditionSecondValueComboBox.DataSource = propertyOptions;
+                        startConditionSecondValueComboBox.SelectedIndex = selectedIndex;
+                    }
+                }
+            }
+
+        }
+        private void hasStartConditionCheckBox_Click(object sender, EventArgs e)
+        {
+            if (hasStartConditionCheckBox.Checked)
+                faux.startingCondition = (BooleanMacro)MacroType.GenerateFauxMacro(Macro.Boolean);
+            else
+                faux.startingCondition = null;
+
+            RefreshFauxDisplay();
+            RefreshStartConditionControls();
+        }
+        private void startConditionFirstValueComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            faux.startingCondition.SetPropertyValue("first_source_id", (int)startConditionFirstValueComboBox.SelectedItem);
+        }
+        private void startConditionSecondValueComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            faux.startingCondition.SetPropertyValue("second_source_id", (int)startConditionSecondValueComboBox.SelectedItem);
+        }
+        private void startConditionOperationComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            faux.startingCondition.SetPropertyValue("operation", (int)startConditionOperationComboBox.SelectedItem);
+        }
+        private void startConditionFirstSourceComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            if (faux != null && faux.startingCondition != null)
+            {
+                faux.startingCondition.SetPropertyValue("first_source", (int)startConditionFirstSourceComboBox.SelectedItem);
+                RefreshStartConditionControls();
+            }
+        }
+        private void startConditionFirstMacroIdComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            faux.startingCondition.SetPropertyValue("first_source_macro_id", ((MacroType)startConditionFirstMacroIdComboBox.SelectedItem).GetId());
+            RefreshStartConditionControls();
+        }
+        private void startConditionSecondSourceComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            if (faux != null && faux.startingCondition != null)
+            {
+                faux.startingCondition.SetPropertyValue("second_source", (int)startConditionSecondSourceComboBox.SelectedItem);
+                RefreshStartConditionControls();
+            }
+        }
+        private void startConditionSecondMacroIdComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            faux.startingCondition.SetPropertyValue("second_source_macro_id", ((MacroType)startConditionSecondMacroIdComboBox.SelectedItem).GetId());
+            RefreshStartConditionControls();
+        }
+
+        private void startConditionFirstValueTextBox_TextChanged(object sender, EventArgs e)
+        {
+            int value = 0;
+            try
+            {
+                value = Convert.ToInt32(startConditionFirstValueTextBox.Text);
+            }
+            catch (Exception) { }
+
+            var source = (DataSource)faux.startingCondition.GetProperty("first_source").value;
+            if (source == DataSource.Self)
+                faux.startingCondition.SetPropertyValue("first_value", value);
+            else
+                faux.startingCondition.SetPropertyValue("first_source_id", value);
+        }
+        private void startConditionSecondValueTextBox_TextChanged(object sender, EventArgs e)
+        {
+            int value = 0;
+            try
+            {
+                value = Convert.ToInt32(startConditionSecondValueTextBox.Text);
+            }
+            catch (Exception) { }
+
+            var source = (DataSource)faux.startingCondition.GetProperty("second_source").value;
+            if (source == DataSource.Self)
+                faux.startingCondition.SetPropertyValue("second_value", value);
+            else
+                faux.startingCondition.SetPropertyValue("second_source_id", value);
+        }
+
         private void RefreshFauxDisplay()
         {
             if (faux != null)
@@ -173,6 +379,8 @@ namespace MacroMan
             //addToListButton.Enabled = faux != null;
             macroDataSplitContainer.Visible = faux != null;
             macroDataSplitContainer.Enabled = faux != null;
+
+            RefreshStartConditionControls();
         }
         private void RefreshPropertyOptions()
         {
@@ -180,10 +388,10 @@ namespace MacroMan
             int propertyId = GetCurrentPropertyId();
             Array propertyOptions = MacroType.GetPropertyOptions(fauxType, propertyId);
             bool hasOptions = propertyOptions != null;
-            propertyOptionsPanel.Enabled = hasOptions;
-            propertyOptionsPanel.Visible = hasOptions;
-            propertyValuePanel.Enabled = !hasOptions;
-            propertyValuePanel.Visible = !hasOptions;
+            propertyOptionsComboBox.Enabled = hasOptions;
+            propertyOptionsComboBox.Visible = hasOptions;
+            propertyValueTextBox.Enabled = !hasOptions;
+            propertyValueTextBox.Visible = !hasOptions;
             propertyOptionsComboBox.DataSource = propertyOptions;
 
             MacroProperty prop = faux.GetProperty(propertyId);
@@ -198,6 +406,29 @@ namespace MacroMan
                         break;
                     }
                 }
+                propertyOptionsComboBox.SelectedIndex = selectedIndex;
+            }
+            else if (IsCurrentPropertyPointer())
+            {
+                int selectedIndex = 0;
+                if (IsCurrentPropertyMacroId())
+                {
+                    propertyOptions = MacroType.GetCachedMacros();
+                    selectedIndex = Array.IndexOf(propertyOptions, MacroType.GetMacro((int)prop.value));
+                }
+                else
+                {
+                    string propStart = GetCurrentPropertyPointerStart();
+                    int macroId = (int)faux.GetProperty(propStart + "_source_macro_id").value;
+                    propertyOptions = MacroType.GetMacro(macroId).GetProperties();
+                    selectedIndex = Array.IndexOf(propertyOptions.Cast<int>().ToArray(), prop.value);
+                }
+
+                propertyOptionsComboBox.Enabled = true;
+                propertyOptionsComboBox.Visible = true;
+                propertyValueTextBox.Enabled = false;
+                propertyValueTextBox.Visible = false;
+                propertyOptionsComboBox.DataSource = propertyOptions;
                 propertyOptionsComboBox.SelectedIndex = selectedIndex;
             }
             else
@@ -241,11 +472,19 @@ namespace MacroMan
         }
         private void macrosListBox_DoubleClick(object sender, EventArgs e)
         {
-            faux = (MacroType)macrosListBox.SelectedItem;
-            addToListButton.Enabled = false;
-            macroNameTextBox.Enabled = false;
-            //RefreshPropertyOptions();
-            RefreshFauxDisplay();
+            SelectMacroFromList();
+        }
+
+        private void SelectMacroFromList()
+        {
+            if (macrosListBox.SelectedIndex >= 0)
+            {
+                faux = (MacroType)macrosListBox.SelectedItem;
+                addToListButton.Enabled = false;
+                macroNameTextBox.Enabled = false;
+                //RefreshPropertyOptions();
+                RefreshFauxDisplay();
+            }
         }
 
         private void macroNameTextBox_TextChanged(object sender, EventArgs e)
@@ -255,8 +494,15 @@ namespace MacroMan
         }
         private void propertyOptionsComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
+            int setPropertyValue;
+
             int propertyId = GetCurrentPropertyId();
-            faux.SetPropertyValue(propertyId, (int)propertyOptionsComboBox.SelectedItem);
+            if (IsCurrentPropertyPointer() && IsCurrentPropertyMacroId())
+                setPropertyValue = ((MacroType)propertyOptionsComboBox.SelectedItem).GetId();
+            else
+                setPropertyValue = (int)propertyOptionsComboBox.SelectedItem;
+
+            faux.SetPropertyValue(propertyId, setPropertyValue);
         }
         private void propertyValueTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -362,6 +608,11 @@ namespace MacroMan
                 }
             }
 
+            if (e.KeyCode == Keys.Enter)
+            {
+                SelectMacroFromList();
+            }
+
             e.Handled = true;
         }
 
@@ -379,6 +630,9 @@ namespace MacroMan
             if (macrosListBox.Items.Count > 0)
             {
                 macrosListBox.Enabled = false;
+                shiftMacroDownButton.Enabled = false;
+                shiftMacroUpButton.Enabled = false;
+                deleteButton.Enabled = false;
                 macrosListBox.SelectedIndex = -1;
 
                 MacroType[] sequence = new MacroType[macrosListBox.Items.Count];
@@ -387,6 +641,9 @@ namespace MacroMan
                 await MacroType.Execute(sequence);
 
                 macrosListBox.Enabled = true;
+                shiftMacroDownButton.Enabled = true;
+                shiftMacroUpButton.Enabled = true;
+                deleteButton.Enabled = true;
             }
         }
     }

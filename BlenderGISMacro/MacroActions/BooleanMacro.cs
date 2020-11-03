@@ -5,168 +5,169 @@ using System.Threading.Tasks;
 
 namespace MacroMan.MacroActions
 {
-    public class IntegerMacro : MacroType
+    public class BooleanMacro : MacroType
     {
         /// <summary>
         /// This enum is used to identify the action this macro will do
         /// We can create an array of actions if we want for this enum,
         /// but I don't see why I would do that than just manually call the actions
         /// </summary>
-        private enum IntegerAction
+        private enum BooleanAction
         {
-            operate = 0,
+            compare = 0,
         }
         /// <summary>
         /// This enum is used to identify and retrieve the variables stored within this
         /// macro. The variables can be found in the properties array.
         /// </summary>
-        private enum IntegerProperties
+        private enum BooleanProperties
         {
             operation = 0,
 
             first_source = 1,
             first_value = 2,
-            first_source_id = 3,
-            first_source_macro_id = 4,
+            first_source_macro_id = 3,
+            first_source_id = 4,
 
             second_source = 5,
             second_value = 6,
-            second_source_id = 7,
-            second_source_macro_id = 8,
+            second_source_macro_id = 7,
+            second_source_id = 8,
 
             result_source = 9,
             result_value = 10,
-            result_source_id = 11,
-            result_source_macro_id = 12,
+            result_source_macro_id = 11,
+            result_source_id = 12,
         }
 
         public string errorMessage { get; private set; }
         public int error { get; private set; }
 
-        private IntegerAction executedAction;
+        private BooleanAction executedAction;
         private MacroProperty[] properties = new MacroProperty[]
         {
             new MacroProperty()
             {
-                name = IntegerProperties.operation.ToString(),
-                id = (int)IntegerProperties.operation,
+                name = BooleanProperties.operation.ToString(),
+                id = (int)BooleanProperties.operation,
                 type = PropertyType.integer,
                 value = 0,
                 readOnly = false,
-                customOptions = () => { return Enum.GetValues(typeof(AlgebraicOperations)); },
+                customOptions = () => { return Enum.GetValues(typeof(BooleanOperations)); },
             },
             new MacroProperty()
             {
-                name = IntegerProperties.first_value.ToString(),
-                id = (int)IntegerProperties.first_value,
-                type = PropertyType.integer,
-                value = 0,
-                readOnly = false,
-            },
-            new MacroProperty()
-            {
-                name = IntegerProperties.second_value.ToString(),
-                id = (int)IntegerProperties.second_value,
+                name = BooleanProperties.first_value.ToString(),
+                id = (int)BooleanProperties.first_value,
                 type = PropertyType.integer,
                 value = 0,
                 readOnly = false,
             },
             new MacroProperty()
             {
-                name = IntegerProperties.result_value.ToString(),
-                id = (int)IntegerProperties.result_value,
+                name = BooleanProperties.first_source_macro_id.ToString(),
+                id = (int)BooleanProperties.first_source_macro_id,
+                type = PropertyType.integer,
+                value = -1,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = BooleanProperties.first_source_id.ToString(),
+                id = (int)BooleanProperties.first_source_id,
+                type = PropertyType.integer,
+                value = -1,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = BooleanProperties.first_source.ToString(),
+                id = (int)BooleanProperties.first_source,
+                type = PropertyType.integer,
+                value = (int)DataSource.Self,
+                readOnly = false,
+                customOptions = () => { return Enum.GetValues(typeof(DataSource)); },
+            },
+                        new MacroProperty()
+            {
+                name = BooleanProperties.second_value.ToString(),
+                id = (int)BooleanProperties.second_value,
+                type = PropertyType.integer,
+                value = 0,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = BooleanProperties.second_source_macro_id.ToString(),
+                id = (int)BooleanProperties.second_source_macro_id,
+                type = PropertyType.integer,
+                value = -1,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = BooleanProperties.second_source_id.ToString(),
+                id = (int)BooleanProperties.second_source_id,
+                type = PropertyType.integer,
+                value = -1,
+                readOnly = false,
+            },
+            new MacroProperty()
+            {
+                name = BooleanProperties.second_source.ToString(),
+                id = (int)BooleanProperties.second_source,
+                type = PropertyType.integer,
+                value = (int)DataSource.Self,
+                readOnly = false,
+                customOptions = () => { return Enum.GetValues(typeof(DataSource)); },
+            },
+            new MacroProperty()
+            {
+                name = BooleanProperties.result_value.ToString(),
+                id = (int)BooleanProperties.result_value,
                 type = PropertyType.integer,
                 value = 0,
                 readOnly = true,
             },
             new MacroProperty()
             {
-                name = IntegerProperties.first_source_id.ToString(),
-                id = (int)IntegerProperties.first_source_id,
+                name = BooleanProperties.result_source_macro_id.ToString(),
+                id = (int)BooleanProperties.result_source_macro_id,
                 type = PropertyType.integer,
                 value = -1,
                 readOnly = false,
             },
             new MacroProperty()
             {
-                name = IntegerProperties.first_source_macro_id.ToString(),
-                id = (int)IntegerProperties.first_source_macro_id,
+                name = BooleanProperties.result_source_id.ToString(),
+                id = (int)BooleanProperties.result_source_id,
                 type = PropertyType.integer,
                 value = -1,
                 readOnly = false,
             },
             new MacroProperty()
             {
-                name = IntegerProperties.second_source_id.ToString(),
-                id = (int)IntegerProperties.second_source_id,
-                type = PropertyType.integer,
-                value = -1,
-                readOnly = false,
-            },
-            new MacroProperty()
-            {
-                name = IntegerProperties.second_source_macro_id.ToString(),
-                id = (int)IntegerProperties.second_source_macro_id,
-                type = PropertyType.integer,
-                value = -1,
-                readOnly = false,
-            },
-            new MacroProperty()
-            {
-                name = IntegerProperties.result_source_id.ToString(),
-                id = (int)IntegerProperties.result_source_id,
-                type = PropertyType.integer,
-                value = -1,
-                readOnly = false,
-            },
-            new MacroProperty()
-            {
-                name = IntegerProperties.result_source_macro_id.ToString(),
-                id = (int)IntegerProperties.result_source_macro_id,
-                type = PropertyType.integer,
-                value = -1,
-                readOnly = false,
-            },
-            new MacroProperty()
-            {
-                name = IntegerProperties.first_source.ToString(),
-                id = (int)IntegerProperties.first_source,
+                name = BooleanProperties.result_source.ToString(),
+                id = (int)BooleanProperties.result_source,
                 type = PropertyType.integer,
                 value = (int)DataSource.Self,
                 readOnly = false,
                 customOptions = () => { return Enum.GetValues(typeof(DataSource)); },
             },
-            new MacroProperty()
-            {
-                name = IntegerProperties.second_source.ToString(),
-                id = (int)IntegerProperties.second_source,
-                type = PropertyType.integer,
-                value = (int)DataSource.Self,
-                readOnly = false,
-                customOptions = () => { return Enum.GetValues(typeof(DataSource)); },
-            },
-            new MacroProperty()
-            {
-                name = IntegerProperties.result_source.ToString(),
-                id = (int)IntegerProperties.result_source,
-                type = PropertyType.integer,
-                value = (int)DataSource.Self,
-                readOnly = false,
-                customOptions = () => { return Enum.GetValues(typeof(DataSource)); },
-            },
+
         };
 
-        public IntegerMacro() : base() { }
-        public IntegerMacro(MacroType other) : base(other) { }
+        public BooleanMacro() : base() { }
+        public BooleanMacro(MacroType other) : base(other) { }
 
         public override Array GetProperties()
         {
-            return Enum.GetValues(typeof(IntegerProperties));
+            return Enum.GetValues(typeof(BooleanProperties));
         }
         public override Array GetShownProperties()
         {
-            var allProperties = (IntegerProperties[])Enum.GetValues(typeof(IntegerProperties));
-            List<IntegerProperties> shownProperties = new List<IntegerProperties>();
+            var allProperties = (BooleanProperties[])Enum.GetValues(typeof(BooleanProperties));
+            List<BooleanProperties> shownProperties = new List<BooleanProperties>();
             for (int i = 0; i < allProperties.Length; i++)
             {
                 if (!GetProperty((int)allProperties[i]).readOnly)
@@ -176,11 +177,11 @@ namespace MacroMan.MacroActions
         }
         public override Array GetActions()
         {
-            return Enum.GetValues(typeof(IntegerAction));
+            return Enum.GetValues(typeof(BooleanAction));
         }
         public override void SetAction(int actionId)
         {
-            executedAction = (IntegerAction)actionId;
+            executedAction = (BooleanAction)actionId;
         }
         public override int GetAction()
         {
@@ -235,16 +236,16 @@ namespace MacroMan.MacroActions
             errorMessage = null;
             try
             {
-                var operation = (AlgebraicOperations)GetProperty((int)IntegerProperties.operation).value;
-                var firstSource = (DataSource)GetProperty((int)IntegerProperties.first_source).value;
-                var secondSource = (DataSource)GetProperty((int)IntegerProperties.second_source).value;
-                var resultSource = (DataSource)GetProperty((int)IntegerProperties.result_source).value;
-                int firstSourceId = (int)GetProperty((int)IntegerProperties.first_source_id).value;
-                int secondSourceId = (int)GetProperty((int)IntegerProperties.second_source_id).value;
-                int resultSourceId = (int)GetProperty((int)IntegerProperties.result_source_id).value;
-                int firstSourceMacroId = (int)GetProperty((int)IntegerProperties.first_source_macro_id).value;
-                int secondSourceMacroId = (int)GetProperty((int)IntegerProperties.second_source_macro_id).value;
-                int resultSourceMacroId = (int)GetProperty((int)IntegerProperties.result_source_macro_id).value;
+                var operation = (BooleanOperations)GetProperty((int)BooleanProperties.operation).value;
+                var firstSource = (DataSource)GetProperty((int)BooleanProperties.first_source).value;
+                var secondSource = (DataSource)GetProperty((int)BooleanProperties.second_source).value;
+                var resultSource = (DataSource)GetProperty((int)BooleanProperties.result_source).value;
+                int firstSourceId = (int)GetProperty((int)BooleanProperties.first_source_id).value;
+                int secondSourceId = (int)GetProperty((int)BooleanProperties.second_source_id).value;
+                int resultSourceId = (int)GetProperty((int)BooleanProperties.result_source_id).value;
+                int firstSourceMacroId = (int)GetProperty((int)BooleanProperties.first_source_macro_id).value;
+                int secondSourceMacroId = (int)GetProperty((int)BooleanProperties.second_source_macro_id).value;
+                int resultSourceMacroId = (int)GetProperty((int)BooleanProperties.result_source_macro_id).value;
 
                 MacroType firstMacroSource = GetMacro(firstSourceMacroId);
                 MacroType secondMacroSource = GetMacro(firstSourceMacroId);
@@ -252,7 +253,7 @@ namespace MacroMan.MacroActions
 
                 int firstValue = 0;
                 if ((firstSource & DataSource.Self) != 0)
-                    firstValue = (int)GetProperty((int)IntegerProperties.first_value).value;
+                    firstValue = (int)GetProperty((int)BooleanProperties.first_value).value;
                 else if ((firstSource & DataSource.Macro) != 0)
                     firstValue = Convert.ToInt32(firstMacroSource.GetProperty(firstSourceId).value);
                 else if ((firstSource & DataSource.Database) != 0)
@@ -260,43 +261,43 @@ namespace MacroMan.MacroActions
 
                 int secondValue = 0;
                 if ((secondSource & DataSource.Self) != 0)
-                    secondValue = (int)GetProperty((int)IntegerProperties.second_value).value;
+                    secondValue = (int)GetProperty((int)BooleanProperties.second_value).value;
                 else if ((secondSource & DataSource.Macro) != 0)
                     secondValue = Convert.ToInt32(secondMacroSource.GetProperty(secondSourceId).value);
                 else if ((secondSource & DataSource.Database) != 0)
                     secondValue = ValuesDatabase.GetInteger(secondSourceId);
 
-                int resultValue = 0;
+                bool resultValue = false;
                 switch (executedAction)
                 {
-                    case IntegerAction.operate:
+                    case BooleanAction.compare:
                         switch (operation)
                         {
-                            case AlgebraicOperations.add:
-                                resultValue = firstValue + secondValue;
+                            case BooleanOperations.equal_to:
+                                resultValue = firstValue == secondValue;
                                 break;
-                            case AlgebraicOperations.subtract:
-                                resultValue = firstValue - secondValue;
+                            case BooleanOperations.greater_than:
+                                resultValue = firstValue > secondValue;
                                 break;
-                            case AlgebraicOperations.multiply:
-                                resultValue = firstValue * secondValue;
+                            case BooleanOperations.greater_than_or_equal_to:
+                                resultValue = firstValue >= secondValue;
                                 break;
-                            case AlgebraicOperations.divide:
-                                resultValue = firstValue / secondValue;
+                            case BooleanOperations.less_than:
+                                resultValue = firstValue < secondValue;
                                 break;
-                            case AlgebraicOperations.modulo:
-                                resultValue = firstValue % secondValue;
+                            case BooleanOperations.less_than_or_equal_to:
+                                resultValue = firstValue <= secondValue;
                                 break;
                         }
                         break;
                 }
 
                 if ((resultSource & DataSource.Self) != 0)
-                    SetPropertyValue((int)IntegerProperties.result_value, resultValue);
+                    SetPropertyValue((int)BooleanProperties.result_value, resultValue ? 1 : 0);
                 if ((resultSource & DataSource.Macro) != 0)
-                    resultMacroSource.SetPropertyValue(resultSourceId, resultValue);
+                    resultMacroSource.SetPropertyValue(resultSourceId, resultValue ? 1 : 0);
                 if ((resultSource & DataSource.Database) != 0)
-                    ValuesDatabase.SetInteger(resultSourceId, resultValue);
+                    ValuesDatabase.SetInteger(resultSourceId, resultValue ? 1 : 0);
             }
             catch (Exception e) { error = 1; errorMessage = e.ToString(); }
 
