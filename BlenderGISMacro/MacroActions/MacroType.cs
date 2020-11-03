@@ -15,6 +15,8 @@ namespace MacroMan.MacroActions
         public string name = string.Empty;
         private int uniqueId;
         public BooleanMacro startingCondition;
+        public int nextMacroId = -1;
+        public static int sequencePlayDelay = 1;
 
         public MacroType()
         {
@@ -30,6 +32,7 @@ namespace MacroMan.MacroActions
             name = newName;
 
             startingCondition = other.startingCondition;
+            nextMacroId = other.nextMacroId;
 
             SetAction(other.GetAction());
 
@@ -85,23 +88,33 @@ namespace MacroMan.MacroActions
         public abstract MacroProperty GetProperty(int propertyId);
         public abstract MacroProperty GetProperty(string propertyKey);
         internal abstract MacroProperty TryGetProperty(string propertyKey, int propertyId);
-        public abstract Task<int> Execute();
+        public abstract Task<int> Execute(System.Threading.CancellationToken cancelToken);
 
-        public static async Task Execute(params MacroType[] sequence)
+        public static async Task Execute(System.Threading.CancellationToken cancelToken, params MacroType[] sequence)
         {
             for (int i = 0; i < sequence.Length; i++)
             {
+                if (cancelToken.IsCancellationRequested)
+                    break;
+
                 MacroType macro = sequence[i];
                 var startCondition = macro.startingCondition;
                 bool execute = true;
                 if (startCondition != null)
                 {
-                    await startCondition.Execute();
+                    await startCondition.Execute(cancelToken);
                     execute = (int)startCondition.GetProperty("result_value").value != 0;
                 }
                 
                 if (execute)
-                    await macro.Execute();
+                    await macro.Execute(cancelToken);
+
+                await Task.Delay(sequencePlayDelay, cancelToken);
+
+                int nextMacroId = macro.nextMacroId;
+                var nextMacro = GetMacro(nextMacroId);
+                if (nextMacro != null)
+                    i = Array.IndexOf(sequence, nextMacro) - 1;
             }
         }
 

@@ -139,7 +139,7 @@ namespace MacroMan.MacroActions
             else
                 throw new KeyNotFoundException();
         }
-        public override Task<int> Execute()
+        public override Task<int> Execute(System.Threading.CancellationToken cancelToken)
         {
             error = 0;
             errorMessage = null;

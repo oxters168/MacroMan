@@ -71,7 +71,6 @@
     <Compile Include="Hooker.cs" />
     <Compile Include="KeyboardOperations.cs" />
     <Compile Include="MacroActions\KeyboardMacro.cs" />
-    <Compile Include="MacroActions\MacroExecutor.cs" />
     <Compile Include="MacroActions\MacroType.cs" />
     <Compile Include="MacroForm.cs">
       <SubType>Form</SubType>

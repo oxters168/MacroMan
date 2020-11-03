@@ -114,7 +114,7 @@ namespace MacroMan.MacroActions
             else
                 throw new KeyNotFoundException();
         }
-        public async override Task<int> Execute()
+        public async override Task<int> Execute(System.Threading.CancellationToken cancelToken)
         {
             error = 0;
             errorMessage = null;
@@ -123,7 +123,7 @@ namespace MacroMan.MacroActions
                 switch (executedAction)
                 {
                     case TimeAction.wait:
-                        await Task.Delay((int)GetProperty((int)TimeProperties.milliseconds).value);
+                        await Task.Delay((int)GetProperty((int)TimeProperties.milliseconds).value, cancelToken);
                         break;
                 }
             }

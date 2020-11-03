@@ -13,13 +13,14 @@ namespace MacroMan
 {
     public partial class MacroForm : Form
     {
-        private CancellationTokenSource backgroundProcess;
+        private CancellationTokenSource tickProcessToken, macroSequenceToken;
         private double startTime = 0;
         private double currentTime = 0;
         private const int milliDelay = 10;
         private MacroType faux;
 
         private bool prevShortcut;
+        private bool isRunning;
 
         private VirtualKey[] runShortcut = new VirtualKey[] { VirtualKey.SPACE };
 
@@ -27,8 +28,8 @@ namespace MacroMan
         {
             InitializeComponent();
 
-            backgroundProcess = new CancellationTokenSource();
-            FrameRunner(backgroundProcess.Token);
+            tickProcessToken = new CancellationTokenSource();
+            FrameRunner(tickProcessToken.Token);
 
             startTime = DateTime.Now.Ticks / 10000000d;
 
@@ -50,7 +51,7 @@ namespace MacroMan
         }
         private void MacroForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            backgroundProcess.Cancel();
+            tickProcessToken.Cancel();
         }
 
         private void OnUpdate()
@@ -68,7 +69,7 @@ namespace MacroMan
 
             if (shortcutPressed && !prevShortcut)
             {
-                RunSequence();
+                ToggleSequence();
                 prevShortcut = true;
             }
             else if (!shortcutPressed)
@@ -381,6 +382,7 @@ namespace MacroMan
             macroDataSplitContainer.Enabled = faux != null;
 
             RefreshStartConditionControls();
+            RefreshGotoMacroControls();
         }
         private void RefreshPropertyOptions()
         {
@@ -550,6 +552,11 @@ namespace MacroMan
                 var macro = macrosListBox.SelectedItem;
                 macrosListBox.Items.Remove(macro);
                 MacroType.RemoveFromCache((MacroType)macro);
+
+                if (faux == macro)
+                    faux = null;
+
+                RefreshFauxDisplay();
             }
         }
 
@@ -621,14 +628,52 @@ namespace MacroMan
             //Console.WriteLine("Changed");
         }
 
+        private void RefreshGotoMacroControls()
+        {
+            MacroType macro = null;
+            if (faux != null)
+                macro = MacroType.GetMacro(faux.nextMacroId);
+
+            gotoMacroCheckBox.Checked = macro != null;
+            gotoMacroComboBox.Enabled = macro != null;
+            var allMacros = MacroType.GetCachedMacros();
+            gotoMacroComboBox.DataSource = allMacros;
+            gotoMacroComboBox.SelectedItem = macro;
+        }
+        private void gotoMacroCheckBox_Click(object sender, EventArgs e)
+        {
+            var allMacros = MacroType.GetCachedMacros();
+            if (gotoMacroCheckBox.Checked)
+                faux.nextMacroId = allMacros.Length > 0 ? allMacros.First().GetId() : -1;
+            else
+                faux.nextMacroId = -1;
+
+            RefreshGotoMacroControls();
+        }
+        private void gotoMacroComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            faux.nextMacroId = ((MacroType)gotoMacroComboBox.SelectedItem).GetId();
+        }
+
+        private void ToggleSequence()
+        {
+            if (!isRunning)
+                RunSequence();
+            else if (!macroSequenceToken.IsCancellationRequested)
+                macroSequenceToken.Cancel();
+        }
+
         private void playButton_Click(object sender, EventArgs e)
         {
-            RunSequence();
+            ToggleSequence();
         }
         private async void RunSequence()
         {
             if (macrosListBox.Items.Count > 0)
             {
+                isRunning = true;
+                macroSequenceToken = new CancellationTokenSource();
+
                 macrosListBox.Enabled = false;
                 shiftMacroDownButton.Enabled = false;
                 shiftMacroUpButton.Enabled = false;
@@ -638,12 +683,18 @@ namespace MacroMan
                 MacroType[] sequence = new MacroType[macrosListBox.Items.Count];
                 for (int i = 0; i < sequence.Length; i++)
                     sequence[i] = (MacroType)macrosListBox.Items[i];
-                await MacroType.Execute(sequence);
+
+                try
+                {
+                    await MacroType.Execute(macroSequenceToken.Token, sequence);
+                }
+                catch (Exception) { }
 
                 macrosListBox.Enabled = true;
                 shiftMacroDownButton.Enabled = true;
                 shiftMacroUpButton.Enabled = true;
                 deleteButton.Enabled = true;
+                isRunning = false;
             }
         }
     }
