@@ -26,18 +26,18 @@ namespace MacroMan.MacroActions
 
             first_source = 1,
             first_value = 2,
-            first_source_id = 3,
-            first_source_macro_id = 4,
+            first_source_macro_id = 3,
+            first_source_id = 4,
 
             second_source = 5,
             second_value = 6,
-            second_source_id = 7,
-            second_source_macro_id = 8,
+            second_source_macro_id = 7,
+            second_source_id = 8,
 
             result_source = 9,
             result_value = 10,
-            result_source_id = 11,
-            result_source_macro_id = 12,
+            result_source_macro_id = 11,
+            result_source_id = 12,
         }
 
         public string errorMessage { get; private set; }
@@ -239,9 +239,9 @@ namespace MacroMan.MacroActions
                 var firstSource = (DataSource)GetProperty((int)IntegerProperties.first_source).value;
                 var secondSource = (DataSource)GetProperty((int)IntegerProperties.second_source).value;
                 var resultSource = (DataSource)GetProperty((int)IntegerProperties.result_source).value;
-                int firstSourceId = (int)GetProperty((int)IntegerProperties.first_source_id).value;
-                int secondSourceId = (int)GetProperty((int)IntegerProperties.second_source_id).value;
-                int resultSourceId = (int)GetProperty((int)IntegerProperties.result_source_id).value;
+                object firstSourceId = GetProperty((int)IntegerProperties.first_source_id).value;
+                object secondSourceId = GetProperty((int)IntegerProperties.second_source_id).value;
+                object resultSourceId = GetProperty((int)IntegerProperties.result_source_id).value;
                 int firstSourceMacroId = (int)GetProperty((int)IntegerProperties.first_source_macro_id).value;
                 int secondSourceMacroId = (int)GetProperty((int)IntegerProperties.second_source_macro_id).value;
                 int resultSourceMacroId = (int)GetProperty((int)IntegerProperties.result_source_macro_id).value;
@@ -254,7 +254,7 @@ namespace MacroMan.MacroActions
                 if ((firstSource & DataSource.Self) != 0)
                     firstValue = (int)GetProperty((int)IntegerProperties.first_value).value;
                 else if ((firstSource & DataSource.Macro) != 0)
-                    firstValue = Convert.ToInt32(firstMacroSource.GetProperty(firstSourceId).value);
+                    firstValue = Convert.ToInt32(firstMacroSource.GetProperty((int)firstSourceId).value);
                 else if ((firstSource & DataSource.Database) != 0)
                     firstValue = ValuesDatabase.GetInteger(firstSourceId);
 
@@ -262,7 +262,7 @@ namespace MacroMan.MacroActions
                 if ((secondSource & DataSource.Self) != 0)
                     secondValue = (int)GetProperty((int)IntegerProperties.second_value).value;
                 else if ((secondSource & DataSource.Macro) != 0)
-                    secondValue = Convert.ToInt32(secondMacroSource.GetProperty(secondSourceId).value);
+                    secondValue = Convert.ToInt32(secondMacroSource.GetProperty((int)secondSourceId).value);
                 else if ((secondSource & DataSource.Database) != 0)
                     secondValue = ValuesDatabase.GetInteger(secondSourceId);
 
@@ -294,7 +294,7 @@ namespace MacroMan.MacroActions
                 if ((resultSource & DataSource.Self) != 0)
                     SetPropertyValue((int)IntegerProperties.result_value, resultValue);
                 if ((resultSource & DataSource.Macro) != 0)
-                    resultMacroSource.SetPropertyValue(resultSourceId, resultValue);
+                    resultMacroSource.SetPropertyValue((int)resultSourceId, resultValue);
                 if ((resultSource & DataSource.Database) != 0)
                     ValuesDatabase.SetInteger(resultSourceId, resultValue);
             }

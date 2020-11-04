@@ -251,31 +251,21 @@ namespace MacroMan.MacroActions
                 MacroType secondMacroSource = GetMacro(firstSourceMacroId);
                 MacroType resultMacroSource = GetMacro(firstSourceMacroId);
 
-                int firstValue = 0;
+                IComparable firstValue = 0;
                 if ((firstSource & DataSource.Self) != 0)
-                    firstValue = (int)GetProperty((int)BooleanProperties.first_value).value;
+                    firstValue = (IComparable)GetProperty((int)BooleanProperties.first_value).value;
                 else if ((firstSource & DataSource.Macro) != 0)
-                    firstValue = Convert.ToInt32(firstMacroSource.GetProperty((int)firstSourceId).value);
+                    firstValue = (IComparable)firstMacroSource.GetProperty((int)firstSourceId).value;
                 else if ((firstSource & DataSource.Database) != 0)
-                {
-                    if (firstSourceId is string)
-                        firstValue = ValuesDatabase.GetInteger((string)firstSourceId);
-                    else
-                        firstValue = ValuesDatabase.GetInteger((int)firstSourceId);
-                }
+                    firstValue = (IComparable)ValuesDatabase.GetValue(firstSourceId);
 
-                int secondValue = 0;
+                IComparable secondValue = 0;
                 if ((secondSource & DataSource.Self) != 0)
-                    secondValue = (int)GetProperty((int)BooleanProperties.second_value).value;
+                    secondValue = (IComparable)GetProperty((int)BooleanProperties.second_value).value;
                 else if ((secondSource & DataSource.Macro) != 0)
-                    secondValue = Convert.ToInt32(secondMacroSource.GetProperty((int)secondSourceId).value);
+                    secondValue = (IComparable)secondMacroSource.GetProperty((int)secondSourceId).value;
                 else if ((secondSource & DataSource.Database) != 0)
-                {
-                    if (secondSourceId is string)
-                        secondValue = ValuesDatabase.GetInteger((string)secondSourceId);
-                    else
-                        secondValue = ValuesDatabase.GetInteger((int)secondSourceId);
-                }
+                    secondValue = (IComparable)ValuesDatabase.GetValue(secondSourceId);
 
                 bool resultValue = false;
                 switch (executedAction)
@@ -284,19 +274,19 @@ namespace MacroMan.MacroActions
                         switch (operation)
                         {
                             case BooleanOperations.equal_to:
-                                resultValue = firstValue == secondValue;
+                                resultValue = firstValue.CompareTo(secondValue) == 0;
                                 break;
                             case BooleanOperations.greater_than:
-                                resultValue = firstValue > secondValue;
+                                resultValue = firstValue.CompareTo(secondValue) > 0;
                                 break;
                             case BooleanOperations.greater_than_or_equal_to:
-                                resultValue = firstValue >= secondValue;
+                                resultValue = firstValue.CompareTo(secondValue) >= 0;
                                 break;
                             case BooleanOperations.less_than:
-                                resultValue = firstValue < secondValue;
+                                resultValue = firstValue.CompareTo(secondValue) < 0;
                                 break;
                             case BooleanOperations.less_than_or_equal_to:
-                                resultValue = firstValue <= secondValue;
+                                resultValue = firstValue.CompareTo(secondValue) <= 0;
                                 break;
                         }
                         break;
@@ -307,12 +297,7 @@ namespace MacroMan.MacroActions
                 if ((resultSource & DataSource.Macro) != 0)
                     resultMacroSource.SetPropertyValue((int)resultSourceId, resultValue ? 1 : 0);
                 if ((resultSource & DataSource.Database) != 0)
-                {
-                    if (resultSourceId is string)
-                        ValuesDatabase.SetInteger((string)resultSourceId, resultValue ? 1 : 0);
-                    else
-                        ValuesDatabase.SetInteger((int)resultSourceId, resultValue ? 1 : 0);
-                }
+                    ValuesDatabase.SetInteger(resultSourceId, resultValue ? 1 : 0);
             }
             catch (Exception e) { error = 1; errorMessage = e.ToString(); }
 

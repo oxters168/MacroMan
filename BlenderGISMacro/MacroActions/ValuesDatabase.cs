@@ -10,12 +10,24 @@ namespace MacroMan.MacroActions
         private static List<IntegerValue> integers = new List<IntegerValue>();
         private static List<StringedValue> stringedValues = new List<StringedValue>();
 
-        private static void ExtendIfOutOfRange(int id)
+        private static void ExtendIntegersIfOutOfRange(int id)
         {
             while (id >= integers.Count)
                 integers.Add(new IntegerValue());
-            //if (id >= integers.Count)
-                //integers.AddRange(new IntegerValue[(id + 1) - integers.Count]);
+        }
+        private static void ExtendStringsIfOutOfRange(int id)
+        {
+            while (id >= stringedValues.Count)
+                stringedValues.Add(new StringedValue());
+        }
+        public static object GetValue(object key)
+        {
+            object value;
+            if (StringExists(key))
+                value = GetString(key);
+            else
+                value = GetInteger(key);
+            return value;
         }
 
         public static int IntegersCount()
@@ -48,13 +60,20 @@ namespace MacroMan.MacroActions
             if (id < 0)
                 throw new IndexOutOfRangeException();
 
-            ExtendIfOutOfRange(id);
+            ExtendIntegersIfOutOfRange(id);
 
             var current = integers[id];
             if (!string.IsNullOrEmpty(key))
                 current.name = key;
             current.value = value;
             integers[id] = current;
+        }
+        public static void SetInteger(object key, int value)
+        {
+            if (key is string)
+                SetInteger((string)key, value);
+            else
+                SetInteger((int)key, value);
         }
         internal static void TrySetInteger(string key, int id, int value)
         {
@@ -74,8 +93,32 @@ namespace MacroMan.MacroActions
             if (id < 0)
                 throw new IndexOutOfRangeException();
 
-            ExtendIfOutOfRange(id);
+            ExtendIntegersIfOutOfRange(id);
             return integers[id].value;
+        }
+        public static int GetInteger(object key)
+        {
+            int value;
+            if (key is string)
+                value = GetInteger((string)key);
+            else
+                value = GetInteger((int)key);
+            return value;
+        }
+        public static bool IntegerExists(string key)
+        {
+            return integers.Where(value => value.name.Equals(key)).Count() > 0;
+        }
+        public static bool IntegerExists(int key)
+        {
+            return key >= 0 && key < integers.Count;
+        }
+        public static bool IntegerExists(object key)
+        {
+            if (key is string)
+                return IntegerExists((string)key);
+            else
+                return IntegerExists((int)key);
         }
         internal static int TryGetInteger(string key, int id)
         {
@@ -98,9 +141,7 @@ namespace MacroMan.MacroActions
             valueColumn.DefaultValue = 0;
 
             for (int i = 0; i < integers.Count; i++)
-            {
                 integerData.Rows.Add(i, integers[i].name, integers[i].value);
-            }
 
             return integerData;
         }
@@ -134,7 +175,7 @@ namespace MacroMan.MacroActions
             if (id < 0)
                 throw new IndexOutOfRangeException();
 
-            ExtendIfOutOfRange(id);
+            ExtendStringsIfOutOfRange(id);
 
             var current = stringedValues[id];
             if (!string.IsNullOrEmpty(key))
@@ -160,8 +201,17 @@ namespace MacroMan.MacroActions
             if (id < 0)
                 throw new IndexOutOfRangeException();
 
-            ExtendIfOutOfRange(id);
+            ExtendStringsIfOutOfRange(id);
             return stringedValues[id].value;
+        }
+        public static string GetString(object key)
+        {
+            string value;
+            if (key is string)
+                value = GetString((string)key);
+            else
+                value = GetString((int)key);
+            return value;
         }
         internal static string TryGetString(string key, int id)
         {
@@ -171,6 +221,37 @@ namespace MacroMan.MacroActions
             else
                 value = GetString(id);
             return value;
+        }
+        public static bool StringExists(string key)
+        {
+            return stringedValues.Where(value => value.name.Equals(key)).Count() > 0;
+        }
+        public static bool StringExists(int key)
+        {
+            return key >= 0 && key < stringedValues.Count;
+        }
+        public static bool StringExists(object key)
+        {
+            if (key is string)
+                return StringExists((string)key);
+            else
+                return StringExists((int)key);
+        }
+
+        public static DataTable StringsToDataTable()
+        {
+            DataTable stringedData = new DataTable();
+            var idColumn = stringedData.Columns.Add("Id", typeof(int));
+            var nameColumn = stringedData.Columns.Add("Name", typeof(string));
+            var valueColumn = stringedData.Columns.Add("Value", typeof(string));
+            idColumn.ReadOnly = true;
+            nameColumn.ReadOnly = false;
+            valueColumn.ReadOnly = false;
+
+            for (int i = 0; i < stringedValues.Count; i++)
+                stringedData.Rows.Add(i, stringedValues[i].name, stringedValues[i].value);
+
+            return stringedData;
         }
     }
 }

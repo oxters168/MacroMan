@@ -328,43 +328,33 @@ namespace MacroMan
 
         private void startConditionFirstValueTextBox_TextChanged(object sender, EventArgs e)
         {
-            int value = 0;
-            bool isInt = true;
+            object value = startConditionFirstValueTextBox.Text;
             try
             {
                 value = Convert.ToInt32(startConditionFirstValueTextBox.Text);
             }
-            catch (Exception) { isInt = false; }
+            catch (Exception) { }
 
             var source = (DataSource)faux.startingCondition.GetProperty("first_source").value;
             if (source == DataSource.Self)
-            {
                 faux.startingCondition.SetPropertyValue("first_value", value);
-                if (isInt)
-                    startConditionFirstValueTextBox.Text = value.ToString();
-            }
             else
-                faux.startingCondition.SetPropertyValue("first_source_id", isInt ? value : (object)startConditionFirstValueTextBox.Text);
+                faux.startingCondition.SetPropertyValue("first_source_id", value);
         }
         private void startConditionSecondValueTextBox_TextChanged(object sender, EventArgs e)
         {
-            int value = 0;
-            bool isInt = true;
+            object value = startConditionSecondValueTextBox.Text;
             try
             {
                 value = Convert.ToInt32(startConditionSecondValueTextBox.Text);
             }
-            catch (Exception) { isInt = false; }
+            catch (Exception) { }
 
             var source = (DataSource)faux.startingCondition.GetProperty("second_source").value;
             if (source == DataSource.Self)
-            {
                 faux.startingCondition.SetPropertyValue("second_value", value);
-                if (isInt)
-                    startConditionSecondValueTextBox.Text = value.ToString();
-            }
             else
-                faux.startingCondition.SetPropertyValue("second_source_id", isInt ? value : (object)startConditionSecondValueTextBox.Text);
+                faux.startingCondition.SetPropertyValue("second_source_id", value);
         }
 
         private void RefreshFauxDisplay()
@@ -422,7 +412,7 @@ namespace MacroMan
             }
             else if (IsCurrentPropertyPointer())
             {
-                int selectedIndex = 0;
+                int selectedIndex = -1;
                 if (IsCurrentPropertyMacroId())
                 {
                     propertyOptions = MacroType.GetCachedMacros();
@@ -432,8 +422,9 @@ namespace MacroMan
                 {
                     string propStart = GetCurrentPropertyPointerStart();
                     int macroId = (int)faux.GetProperty(propStart + "_source_macro_id").value;
-                    propertyOptions = MacroType.GetMacro(macroId).GetProperties();
-                    selectedIndex = Array.IndexOf(propertyOptions.Cast<int>().ToArray(), prop.value);
+                    propertyOptions = MacroType.GetMacro(macroId)?.GetProperties();
+                    if (propertyOptions != null)
+                        selectedIndex = Array.IndexOf(propertyOptions.Cast<int>().ToArray(), prop.value);
                 }
 
                 propertyOptionsComboBox.Enabled = true;
@@ -693,12 +684,14 @@ namespace MacroMan
         private void integersDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DatabaseBrowser browser = new DatabaseBrowser();
-            browser.SetData();
+            browser.SetupData(ValuesDatabase.IntegersToDataTable, (id, value, name) => { ValuesDatabase.SetInteger(id, (int)value, (string)name); });
             browser.ShowDialog();
         }
         private void stringsDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            DatabaseBrowser browser = new DatabaseBrowser();
+            browser.SetupData(ValuesDatabase.StringsToDataTable, (id, value, name) => { ValuesDatabase.SetString(id, (string)value, (string)name); });
+            browser.ShowDialog();
         }
 
         private async void RunSequence()
