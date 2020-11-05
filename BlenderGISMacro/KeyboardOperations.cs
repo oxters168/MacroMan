@@ -57,12 +57,14 @@
         public static void KeyDown(VirtualKey key)
         {
             // Simulate a key press
-            ExternAPI.keybd_event((byte)key, 0x45, (int)(KeyEventF.EXTENDEDKEY | 0), 0);
+            //ExternAPI.keybd_event((byte)key, 0x45, (int)(KeyEventF.EXTENDEDKEY | KeyEventF.KEYDOWN), 0);
+            ExternAPI.keybd_event((byte)key, 0, (int)KeyEventF.KEYDOWN, 0);
         }
         public static void KeyUp(VirtualKey key)
         {
             // Simulate a key release
-            ExternAPI.keybd_event((byte)key, 0x45, (int)(KeyEventF.EXTENDEDKEY | KeyEventF.KEYUP), 0);
+            //ExternAPI.keybd_event((byte)key, 0x45, (int)(KeyEventF.EXTENDEDKEY | KeyEventF.KEYUP), 0);
+            ExternAPI.keybd_event((byte)key, 0, (int)KeyEventF.KEYUP, 0);
         }
     }
 }

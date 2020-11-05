@@ -183,6 +183,13 @@ namespace MacroMan.MacroActions
             current.value = value;
             stringedValues[id] = current;
         }
+        public static void SetString(object key, string value)
+        {
+            if (key is string)
+                SetString((string)key, value);
+            else
+                SetString((int)key, value);
+        }
         internal static void TrySetString(string key, int id, string value)
         {
             if (!string.IsNullOrEmpty(key))

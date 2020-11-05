@@ -49,6 +49,10 @@ namespace MacroMan.MacroActions
             return name;
         }
 
+        public static void ClearCache()
+        {
+            cachedMacros.Clear();
+        }
         public static void RemoveFromCache(MacroType macro)
         {
             cachedMacros.Remove(macro);
@@ -133,6 +137,8 @@ namespace MacroMan.MacroActions
                 macroType = Macro.Window;
             else if (macro is BooleanMacro)
                 macroType = Macro.Boolean;
+            else if (macro is ClipboardMacro)
+                macroType = Macro.Clipboard;
 
             return macroType;
         }
@@ -176,6 +182,12 @@ namespace MacroMan.MacroActions
                         macro = new BooleanMacro(toClone);
                     else
                         macro = new BooleanMacro();
+                    break;
+                case Macro.Clipboard:
+                    if (toClone != null)
+                        macro = new ClipboardMacro(toClone);
+                    else
+                        macro = new ClipboardMacro();
                     break;
             }
             return macro;
@@ -253,6 +265,37 @@ namespace MacroMan.MacroActions
         public static Dictionary<int, string> PropsToDictionary(IEnumerable<MacroProperty> props)
         {
             return ToDictionary<MacroProperty, int, string>(props, delegate (MacroProperty prop) { return prop.id; }, delegate (MacroProperty prop) { return prop.name; });
+        }
+
+        public static object StringToDynamicType(string originalText)
+        {
+            object value = originalText;
+            bool foundType = false;
+            try
+            {
+                value = Convert.ToBoolean(originalText) ? 1 : 0;
+                foundType = true;
+            }
+            catch (Exception) { }
+            if (!foundType)
+            {
+                try
+                {
+                    value = Convert.ToInt32(originalText);
+                    foundType = true;
+                }
+                catch (Exception) { }
+            }
+            if (!foundType)
+            {
+                try
+                {
+                    value = Convert.ToSingle(originalText);
+                    foundType = true;
+                }
+                catch (Exception) { }
+            }
+            return value;
         }
     }
 }

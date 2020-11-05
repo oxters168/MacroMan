@@ -3,6 +3,7 @@
     public enum Macro
     {
         Boolean,
+        Clipboard,
         Integer,
         Keyboard,
         Mouse,

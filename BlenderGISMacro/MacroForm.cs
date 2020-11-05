@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +20,7 @@ namespace MacroMan
         private bool prevShortcut;
         private bool isRunning;
 
-        private VirtualKey[] runShortcut = new VirtualKey[] { VirtualKey.SPACE };
+        public static VirtualKey[] runSequenceShortcut = new VirtualKey[] { VirtualKey.SPACE };
 
         public MacroForm()
         {
@@ -37,6 +35,9 @@ namespace MacroMan
             SetupStaticComboboxes();
             RefreshFauxDisplay();
             RefreshStartConditionControls();
+
+            foreach (ToolStripMenuItem menuItem in menuStrip1.Items)
+                ((ToolStripDropDownMenu)menuItem.DropDown).ShowImageMargin = false;
         }
         private async void FrameRunner(CancellationToken cancellationToken)
         {
@@ -64,8 +65,8 @@ namespace MacroMan
         private void PlayOnShortcut()
         {
             bool shortcutPressed = true;
-            for (int i = 0; i < runShortcut.Length; i++)
-                shortcutPressed &= KeyboardOperations.IsKeyPressed(runShortcut[i]);
+            for (int i = 0; i < runSequenceShortcut.Length; i++)
+                shortcutPressed &= KeyboardOperations.IsKeyPressed(runSequenceShortcut[i]);
 
             if (shortcutPressed && !prevShortcut)
             {
@@ -107,7 +108,7 @@ namespace MacroMan
             MacroProperty prop = faux.GetProperty(propertyId);
 
             string propStart = GetCurrentPropertyPointerStart();
-            return (fauxType == Macro.Boolean || fauxType == Macro.Integer) && prop.name.Contains(propStart + "_source_") && (DataSource)faux.GetProperty(propStart + "_source").value == DataSource.Macro;
+            return (fauxType == Macro.Boolean || fauxType == Macro.Integer || fauxType == Macro.Clipboard) && prop.name.Contains(propStart + "_source_") && (DataSource)faux.GetProperty(propStart + "_source").value == DataSource.Macro;
         }
         private bool IsCurrentPropertyMacroId()
         {
@@ -120,8 +121,9 @@ namespace MacroMan
         {
             int propertyId = GetCurrentPropertyId();
             MacroProperty prop = faux.GetProperty(propertyId);
+            return prop.name.Split('_')[0];
 
-            return prop.name.Contains("first") ? "first" : prop.name.Contains("second") ? "second" : "result";
+            //return prop.name.Contains("first") ? "first" : prop.name.Contains("second") ? "second" : "result";
         }
 
         private void MacroForm_Resize(object sender, EventArgs e)
@@ -361,10 +363,11 @@ namespace MacroMan
         {
             if (faux != null)
             {
+                Macro fauxType = MacroType.GetMacroType(faux);
+
+                macroTypeLabel.Text = fauxType.ToString();
                 macroNameTextBox.Text = faux.name;
                 macroIdLabel.Text = faux.GetId() >= 0 ? "id: " + faux.GetId() : "id: -";
-
-                Macro fauxType = MacroType.GetMacroType(faux);
 
                 int propertyListIndex = macroPropertiesListBox.SelectedIndex;
 
@@ -380,6 +383,8 @@ namespace MacroMan
             //addToListButton.Enabled = faux != null;
             macroDataSplitContainer.Visible = faux != null;
             macroDataSplitContainer.Enabled = faux != null;
+            macroTypeLabel.Visible = faux != null;
+            macroTypeLabel.Enabled = faux != null;
 
             RefreshStartConditionControls();
             RefreshGotoMacroControls();
@@ -522,6 +527,8 @@ namespace MacroMan
                     faux.SetPropertyValue(propertyId, Convert.ToInt32(originalText));
                 else if (propertyType == PropertyType.stringed_value)
                     faux.SetPropertyValue(propertyId, originalText);
+                else
+                    faux.SetPropertyValue(propertyId, MacroType.StringToDynamicType(originalText));
             }
             catch (Exception) { }
         }
@@ -669,35 +676,54 @@ namespace MacroMan
             ToggleSequence();
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //Console.WriteLine("Saved");
-        }
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-        private void integersDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        private void integersDatabaseToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             DatabaseBrowser browser = new DatabaseBrowser();
             browser.SetupData(ValuesDatabase.IntegersToDataTable, (id, value, name) => { ValuesDatabase.SetInteger(id, (int)value, (string)name); });
+            browser.Text = "Integers";
             browser.ShowDialog();
         }
-        private void stringsDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        private void stringsDatabaseToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             DatabaseBrowser browser = new DatabaseBrowser();
             browser.SetupData(ValuesDatabase.StringsToDataTable, (id, value, name) => { ValuesDatabase.SetString(id, (string)value, (string)name); });
+            browser.Text = "Strings";
             browser.ShowDialog();
+        }
+        private void preferencesToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var preferences = new Preferences();
+            preferences.ShowDialog();
+        }
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var about = new About();
+            about.ShowDialog();
+        }
+        private void saveToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void saveAsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            macrosListBox.Items.Clear();
+            MacroType.ClearCache();
         }
 
         private async void RunSequence()
         {
             if (macrosListBox.Items.Count > 0)
             {
+                playButton.Text = "◼";
+
                 isRunning = true;
                 macroSequenceToken = new CancellationTokenSource();
 
@@ -722,6 +748,8 @@ namespace MacroMan
                 shiftMacroUpButton.Enabled = true;
                 deleteButton.Enabled = true;
                 isRunning = false;
+
+                playButton.Text = "➤";
             }
         }
     }

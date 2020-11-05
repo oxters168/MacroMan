@@ -2,6 +2,7 @@
 {
     public enum KeyEventF
     {
+        KEYDOWN = 0x0000,
         /// <summary>
         /// If specified, the scan code was preceded by a prefix byte having the value 0xE0 (224).
         /// </summary>

@@ -6,5 +6,6 @@
         integer = 1,
         floating_point = 2,
         stringed_value = 3,
+        dynamic = 4,
     }
 }

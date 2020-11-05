@@ -75,8 +75,8 @@ namespace MacroMan.MacroActions
             {
                 name = BooleanProperties.first_source_id.ToString(),
                 id = (int)BooleanProperties.first_source_id,
-                type = PropertyType.integer,
-                value = -1,
+                type = PropertyType.dynamic,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()
@@ -108,8 +108,8 @@ namespace MacroMan.MacroActions
             {
                 name = BooleanProperties.second_source_id.ToString(),
                 id = (int)BooleanProperties.second_source_id,
-                type = PropertyType.integer,
-                value = -1,
+                type = PropertyType.dynamic,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()
@@ -141,8 +141,8 @@ namespace MacroMan.MacroActions
             {
                 name = BooleanProperties.result_source_id.ToString(),
                 id = (int)BooleanProperties.result_source_id,
-                type = PropertyType.integer,
-                value = -1,
+                type = PropertyType.dynamic,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()

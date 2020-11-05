@@ -83,8 +83,8 @@ namespace MacroMan.MacroActions
             {
                 name = IntegerProperties.first_source_id.ToString(),
                 id = (int)IntegerProperties.first_source_id,
-                type = PropertyType.integer,
-                value = -1,
+                type = PropertyType.dynamic,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()
@@ -99,8 +99,8 @@ namespace MacroMan.MacroActions
             {
                 name = IntegerProperties.second_source_id.ToString(),
                 id = (int)IntegerProperties.second_source_id,
-                type = PropertyType.integer,
-                value = -1,
+                type = PropertyType.dynamic,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()
@@ -115,8 +115,8 @@ namespace MacroMan.MacroActions
             {
                 name = IntegerProperties.result_source_id.ToString(),
                 id = (int)IntegerProperties.result_source_id,
-                type = PropertyType.integer,
-                value = -1,
+                type = PropertyType.dynamic,
+                value = string.Empty,
                 readOnly = false,
             },
             new MacroProperty()
