@@ -5,18 +5,19 @@ using System.Threading.Tasks;
 
 namespace MacroMan.MacroActions
 {
+    [Serializable]
     public abstract class MacroType
     {
         private static int totalId;
         private static List<MacroType> cachedMacros = new List<MacroType>();
         private static Macro[] macroTypes = (Macro[])Enum.GetValues(typeof(Macro));
         private static MacroType[] references = new MacroType[macroTypes.Length];
+        public static int sequencePlayDelay = 1;
 
         public string name = string.Empty;
         private int uniqueId;
         public BooleanMacro startingCondition;
         public int nextMacroId = -1;
-        public static int sequencePlayDelay = 1;
 
         public MacroType()
         {
@@ -49,9 +50,34 @@ namespace MacroMan.MacroActions
             return name;
         }
 
+        public static void SaveCacheTo(string loc)
+        {
+            var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            using (var fs = new System.IO.FileStream(loc, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.ReadWrite, System.IO.FileShare.None))
+            using (var ms = new System.IO.MemoryStream())
+            using (var sw = new System.IO.StreamWriter(fs))
+            {
+                bf.Serialize(ms, cachedMacros);
+                fs.SetLength(0);
+                ms.Position = 0;
+                ms.CopyTo(fs);
+            }
+        }
+        public static void LoadToCache(string loc)
+        {
+            var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            using (var fs = new System.IO.FileStream(loc, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+                cachedMacros = (List<MacroType>)bf.Deserialize(fs);
+            }
+
+            totalId = cachedMacros.Max(macro => macro.uniqueId) + 1;
+        }
+
         public static void ClearCache()
         {
             cachedMacros.Clear();
+            totalId = 0;
         }
         public static void RemoveFromCache(MacroType macro)
         {

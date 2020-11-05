@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 namespace MacroMan.MacroActions
 {
+    [Serializable]
     public class ClipboardMacro : MacroType
     {
         /// <summary>

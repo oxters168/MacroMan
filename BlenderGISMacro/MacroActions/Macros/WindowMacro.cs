@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MacroMan.MacroActions
 {
+    [Serializable]
     public class WindowMacro : MacroType
     {
         /// <summary>

@@ -2,81 +2,57 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace MacroMan.MacroActions
 {
-    public class MouseMacro : MacroType
+    [Serializable]
+    public class TimeMacro : MacroType
     {
         /// <summary>
         /// This enum is used to identify the action this macro will do
         /// We can create an array of actions if we want for this enum,
         /// but I don't see why I would do that than just manually call the actions
         /// </summary>
-        private enum MouseAction
+        private enum TimeAction
         {
-            set_pos = 0,
-            button_click = 1,
-            button_down = 2,
-            button_up = 3,
-            get_pos = 4,
-            //get_pressed = 5,
+            wait = 0,
         }
         /// <summary>
         /// This enum is used to identify and retrieve the variables stored within this
         /// macro. The variables can be found in the properties array.
         /// </summary>
-        private enum MouseProperties
+        private enum TimeProperties
         {
-            x_pos = 0,
-            y_pos = 1,
-            button = 2,
+            milliseconds = 0,
         }
 
         public string errorMessage { get; private set; }
         public int error { get; private set; }
 
-        private MouseAction executedAction;
+        private TimeAction executedAction;
         private MacroProperty[] properties = new MacroProperty[]
         {
             new MacroProperty()
             {
-                name = MouseProperties.x_pos.ToString(),
-                id = (int)MouseProperties.x_pos,
+                name = TimeProperties.milliseconds.ToString(),
+                id = (int)TimeProperties.milliseconds,
                 type = PropertyType.integer,
                 value = 0,
                 readOnly = false,
-            },
-            new MacroProperty()
-            {
-                name = MouseProperties.y_pos.ToString(),
-                id = (int)MouseProperties.y_pos,
-                type = PropertyType.integer,
-                value = 0,
-                readOnly = false,
-            },
-            new MacroProperty()
-            {
-                name = MouseProperties.button.ToString(),
-                id = (int)MouseProperties.button,
-                type = PropertyType.integer,
-                value = 0,
-                readOnly = false,
-                customOptions = () => { return Enum.GetValues(typeof(MouseButton)); }
             },
         };
 
-        public MouseMacro() : base() { }
-        public MouseMacro(MacroType other) : base(other) { }
+        public TimeMacro() : base() { }
+        public TimeMacro(MacroType other) : base(other) { }
 
         public override Array GetProperties()
         {
-            return Enum.GetValues(typeof(MouseProperties));
+            return Enum.GetValues(typeof(TimeProperties));
         }
         public override Array GetShownProperties()
         {
-            var allProperties = (MouseProperties[])Enum.GetValues(typeof(MouseProperties));
-            List<MouseProperties> shownProperties = new List<MouseProperties>();
+            var allProperties = (TimeProperties[])Enum.GetValues(typeof(TimeProperties));
+            List<TimeProperties> shownProperties = new List<TimeProperties>();
             for (int i = 0; i < allProperties.Length; i++)
             {
                 if (!GetProperty((int)allProperties[i]).readOnly)
@@ -86,11 +62,11 @@ namespace MacroMan.MacroActions
         }
         public override Array GetActions()
         {
-            return Enum.GetValues(typeof(MouseAction));
+            return Enum.GetValues(typeof(TimeAction));
         }
         public override void SetAction(int actionId)
         {
-            executedAction = (MouseAction)actionId;
+            executedAction = (TimeAction)actionId;
         }
         public override int GetAction()
         {
@@ -139,55 +115,22 @@ namespace MacroMan.MacroActions
             else
                 throw new KeyNotFoundException();
         }
-        public override Task<int> Execute(System.Threading.CancellationToken cancelToken)
+        public async override Task<int> Execute(System.Threading.CancellationToken cancelToken)
         {
             error = 0;
             errorMessage = null;
             try
             {
-                MouseButton button = (MouseButton)GetProperty((int)MouseProperties.button).value;
-                MouseOperations.MouseEventFlags downEvent, upEvent;
-                if (button == MouseButton.left)
-                {
-                    downEvent = MouseOperations.MouseEventFlags.LeftDown;
-                    upEvent = MouseOperations.MouseEventFlags.LeftUp;
-                }
-                else if (button == MouseButton.right)
-                {
-                    downEvent = MouseOperations.MouseEventFlags.RightDown;
-                    upEvent = MouseOperations.MouseEventFlags.RightUp;
-                }
-                else
-                {
-                    downEvent = MouseOperations.MouseEventFlags.MiddleDown;
-                    upEvent = MouseOperations.MouseEventFlags.MiddleUp;
-                }
-
                 switch (executedAction)
                 {
-                    case MouseAction.set_pos:
-                        MouseOperations.SetCursorPosition((int)GetProperty((int)MouseProperties.x_pos).value, (int)GetProperty((int)MouseProperties.y_pos).value);
-                        break;
-                    case MouseAction.button_click:
-                        MouseOperations.MouseEvent(downEvent);
-                        MouseOperations.MouseEvent(upEvent);
-                        break;
-                    case MouseAction.button_down:
-                        MouseOperations.MouseEvent(downEvent);
-                        break;
-                    case MouseAction.button_up:
-                        MouseOperations.MouseEvent(upEvent);
-                        break;
-                    case MouseAction.get_pos:
-                        var pos = MouseOperations.GetCursorPosition();
-                        SetPropertyValue((int)MouseProperties.x_pos, pos.X);
-                        SetPropertyValue((int)MouseProperties.y_pos, pos.Y);
+                    case TimeAction.wait:
+                        await Task.Delay((int)GetProperty((int)TimeProperties.milliseconds).value, cancelToken);
                         break;
                 }
             }
             catch (Exception e) { error = 1; errorMessage = e.ToString(); }
 
-            return Task.FromResult(error);
+            return error;
         }
     }
 }

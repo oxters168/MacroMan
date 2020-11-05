@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace MacroMan.MacroActions
 {
+    [Serializable]
     public class BooleanMacro : MacroType
     {
         /// <summary>

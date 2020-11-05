@@ -20,6 +20,8 @@ namespace MacroMan
         private bool prevShortcut;
         private bool isRunning;
 
+        private string currentFileName = null;
+
         public static VirtualKey[] runSequenceShortcut = new VirtualKey[] { VirtualKey.SPACE };
 
         public MacroForm()
@@ -700,22 +702,88 @@ namespace MacroMan
             var about = new About();
             about.ShowDialog();
         }
+
+        private void RefreshMacros()
+        {
+            macrosListBox.Items.Clear();
+            macrosListBox.Items.AddRange(MacroType.GetCachedMacros());
+            faux = null;
+            RefreshFauxDisplay();
+        }
+
+        private SaveFileDialog DefaultSaveDialog()
+        {
+            var saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "Macro Man file (*.mman)|*.mman|All files (*.*)|*.*";
+            saveDialog.AddExtension = true;
+            saveDialog.CheckPathExists = true;
+            string initialDirectory = Environment.CurrentDirectory;
+            if (currentFileName != null)
+            {
+                initialDirectory = currentFileName;
+            }
+            saveDialog.InitialDirectory = initialDirectory;
+            return saveDialog;
+        }
+        private OpenFileDialog DefaultOpenDialog()
+        {
+            var openDialog = new OpenFileDialog();
+            openDialog.Filter = "Macro Man file (*.mman)|*.mman|All files (*.*)|*.*";
+            openDialog.AddExtension = true;
+            openDialog.CheckPathExists = true;
+            openDialog.CheckFileExists = true;
+            string initialDirectory = Environment.CurrentDirectory;
+            if (currentFileName != null)
+            {
+                initialDirectory = currentFileName;
+            }
+            openDialog.InitialDirectory = initialDirectory;
+            return openDialog;
+        }
+        private void InitiateSave()
+        {
+            if (macrosListBox.Items.Count > 0)
+            {
+                var saveDialog = DefaultSaveDialog();
+                var result = saveDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    currentFileName = saveDialog.FileName;
+                    MacroType.SaveCacheTo(currentFileName);
+                }
+            }
+            else
+                MessageBox.Show("Cannot save an empty sequence", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
         private void saveToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-
+            if (!string.IsNullOrEmpty(currentFileName))
+                MacroType.SaveCacheTo(currentFileName);
+            else
+                InitiateSave();
         }
         private void saveAsToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-
+            InitiateSave();
         }
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            var openDialog = DefaultOpenDialog();
+            var result = openDialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                currentFileName = openDialog.FileName;
+                MacroType.LoadToCache(currentFileName);
+                RefreshMacros();
+            }
         }
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            macrosListBox.Items.Clear();
             MacroType.ClearCache();
+            currentFileName = null;
+            faux = null;
+            RefreshMacros();
+            RefreshFauxDisplay();
         }
 
         private async void RunSequence()

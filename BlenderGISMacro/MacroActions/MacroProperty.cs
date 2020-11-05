@@ -2,6 +2,7 @@
 
 namespace MacroMan.MacroActions
 {
+    [Serializable]
     public struct MacroProperty
     {
         public string name;

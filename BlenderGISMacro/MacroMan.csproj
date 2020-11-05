@@ -61,8 +61,8 @@
     <Compile Include="DatabaseBrowser.Designer.cs">
       <DependentUpon>DatabaseBrowser.cs</DependentUpon>
     </Compile>
-    <Compile Include="MacroActions\BooleanMacro.cs" />
-    <Compile Include="MacroActions\ClipboardMacro.cs" />
+    <Compile Include="MacroActions\Macros\BooleanMacro.cs" />
+    <Compile Include="MacroActions\Macros\ClipboardMacro.cs" />
     <Compile Include="MacroActions\Enums\AlgebraicOperations.cs" />
     <Compile Include="MacroActions\Enums\BooleanOperations.cs" />
     <Compile Include="MacroActions\Enums\BooleanValue.cs" />
@@ -71,13 +71,13 @@
     <Compile Include="MacroActions\Enums\MouseButton.cs" />
     <Compile Include="MacroActions\Enums\PropertyType.cs" />
     <Compile Include="MacroActions\IntegerValue.cs" />
-    <Compile Include="MacroActions\MouseMacro.cs" />
+    <Compile Include="MacroActions\Macros\MouseMacro.cs" />
     <Compile Include="MacroActions\StringedValue.cs" />
-    <Compile Include="MacroActions\TimeMacro.cs" />
+    <Compile Include="MacroActions\Macros\TimeMacro.cs" />
     <Compile Include="MacroActions\ValuesDatabase.cs" />
     <Compile Include="MacroActions\MacroProperty.cs" />
-    <Compile Include="MacroActions\IntegerMacro.cs" />
-    <Compile Include="MacroActions\WindowMacro.cs" />
+    <Compile Include="MacroActions\Macros\IntegerMacro.cs" />
+    <Compile Include="MacroActions\Macros\WindowMacro.cs" />
     <Compile Include="Preferences.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -92,7 +92,7 @@
     <Compile Include="ExternAPI.cs" />
     <Compile Include="Hooker.cs" />
     <Compile Include="KeyboardOperations.cs" />
-    <Compile Include="MacroActions\KeyboardMacro.cs" />
+    <Compile Include="MacroActions\Macros\KeyboardMacro.cs" />
     <Compile Include="MacroActions\MacroType.cs" />
     <Compile Include="MacroForm.cs">
       <SubType>Form</SubType>
@@ -151,5 +151,6 @@
   <ItemGroup>
     <Content Include="MM.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
