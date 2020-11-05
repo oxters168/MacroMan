@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -681,14 +682,14 @@ namespace MacroMan
         private void integersDatabaseToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             DatabaseBrowser browser = new DatabaseBrowser();
-            browser.SetupData(ValuesDatabase.IntegersToDataTable, (id, value, name) => { ValuesDatabase.SetInteger(id, (int)value, (string)name); });
+            browser.SetupData(ValuesDatabase.IntegersToDataTable, (id, value, name) => { ValuesDatabase.SetInteger(id, (int)value, (string)name); }, ValuesDatabase.SaveIntegersTo, ValuesDatabase.LoadIntegers, ValuesDatabase.IntegersExt);
             browser.Text = "Integers";
             browser.ShowDialog();
         }
         private void stringsDatabaseToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             DatabaseBrowser browser = new DatabaseBrowser();
-            browser.SetupData(ValuesDatabase.StringsToDataTable, (id, value, name) => { ValuesDatabase.SetString(id, (string)value, (string)name); });
+            browser.SetupData(ValuesDatabase.StringsToDataTable, (id, value, name) => { ValuesDatabase.SetString(id, (string)value, (string)name); }, ValuesDatabase.SaveStringsTo, ValuesDatabase.LoadStrings, ValuesDatabase.StringsExt);
             browser.Text = "Strings";
             browser.ShowDialog();
         }
@@ -740,16 +741,32 @@ namespace MacroMan
             openDialog.InitialDirectory = initialDirectory;
             return openDialog;
         }
+        private MacroType[] GetMacroSequence()
+        {
+            var sequence = new MacroType[macrosListBox.Items.Count];
+            for (int i = 0; i < sequence.Length; i++)
+                sequence[i] = (MacroType)macrosListBox.Items[i];
+            return sequence;
+        }
+        private void RefreshTitle()
+        {
+            string title = "Macro Man";
+            if (!string.IsNullOrEmpty(currentFileName))
+                title += " [" + Path.GetFileNameWithoutExtension(currentFileName) + "]";
+            Text = title;
+        }
         private void InitiateSave()
         {
-            if (macrosListBox.Items.Count > 0)
+            var sequence = GetMacroSequence();
+            if (sequence.Length > 0)
             {
                 var saveDialog = DefaultSaveDialog();
                 var result = saveDialog.ShowDialog();
                 if (result == DialogResult.OK)
                 {
                     currentFileName = saveDialog.FileName;
-                    MacroType.SaveCacheTo(currentFileName);
+                    MacroType.SaveSequenceTo(currentFileName, sequence);
+                    RefreshTitle();
                 }
             }
             else
@@ -758,7 +775,7 @@ namespace MacroMan
         private void saveToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(currentFileName))
-                MacroType.SaveCacheTo(currentFileName);
+                MacroType.SaveSequenceTo(currentFileName, GetMacroSequence());
             else
                 InitiateSave();
         }
@@ -774,6 +791,7 @@ namespace MacroMan
             {
                 currentFileName = openDialog.FileName;
                 MacroType.LoadToCache(currentFileName);
+                RefreshTitle();
                 RefreshMacros();
             }
         }
@@ -782,6 +800,7 @@ namespace MacroMan
             MacroType.ClearCache();
             currentFileName = null;
             faux = null;
+            RefreshTitle();
             RefreshMacros();
             RefreshFauxDisplay();
         }

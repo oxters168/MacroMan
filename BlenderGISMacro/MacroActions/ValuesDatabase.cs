@@ -10,6 +10,57 @@ namespace MacroMan.MacroActions
         private static List<IntegerValue> integers = new List<IntegerValue>();
         private static List<StringedValue> stringedValues = new List<StringedValue>();
 
+        public static string IntegersExt()
+        {
+            return "intdb";
+        }
+        public static void SaveIntegersTo(string loc)
+        {
+            var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            using (var fs = new System.IO.FileStream(loc, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.ReadWrite, System.IO.FileShare.None))
+            using (var ms = new System.IO.MemoryStream())
+            using (var sw = new System.IO.StreamWriter(fs))
+            {
+                bf.Serialize(ms, integers);
+                fs.SetLength(0);
+                ms.Position = 0;
+                ms.CopyTo(fs);
+            }
+        }
+        public static void LoadIntegers(string loc)
+        {
+            var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            using (var fs = new System.IO.FileStream(loc, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+                integers = (List<IntegerValue>)bf.Deserialize(fs);
+            }
+        }
+        public static string StringsExt()
+        {
+            return "strdb";
+        }
+        public static void SaveStringsTo(string loc)
+        {
+            var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            using (var fs = new System.IO.FileStream(loc, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.ReadWrite, System.IO.FileShare.None))
+            using (var ms = new System.IO.MemoryStream())
+            using (var sw = new System.IO.StreamWriter(fs))
+            {
+                bf.Serialize(ms, stringedValues);
+                fs.SetLength(0);
+                ms.Position = 0;
+                ms.CopyTo(fs);
+            }
+        }
+        public static void LoadStrings(string loc)
+        {
+            var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            using (var fs = new System.IO.FileStream(loc, System.IO.FileMode.Open, System.IO.FileAccess.Read))
+            {
+                stringedValues = (List<StringedValue>)bf.Deserialize(fs);
+            }
+        }
+
         private static void ExtendIntegersIfOutOfRange(int id)
         {
             while (id >= integers.Count)

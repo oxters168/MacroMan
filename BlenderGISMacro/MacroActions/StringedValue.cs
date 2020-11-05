@@ -1,5 +1,8 @@
-﻿namespace MacroMan.MacroActions
+﻿using System;
+
+namespace MacroMan.MacroActions
 {
+    [Serializable]
     public struct StringedValue
     {
         public string value { get { return _value; } set { set = true; _value = value; } }

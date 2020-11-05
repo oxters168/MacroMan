@@ -1,5 +1,4 @@
-﻿using MacroMan.MacroActions;
-using System;
+﻿using System;
 using System.Data;
 using System.Windows.Forms;
 
@@ -9,11 +8,16 @@ namespace MacroMan
     {
         private DataTable dataTable;
         private Func<DataTable> getDataTable;
+        private Func<string> getExt;
         private Action<int, object, object> setDataValue;
+        private Action<string> exportValues, importValues;
 
         public DatabaseBrowser()
         {
             InitializeComponent();
+
+            foreach (ToolStripMenuItem menuItem in menuStrip1.Items)
+                ((ToolStripDropDownMenu)menuItem.DropDown).ShowImageMargin = false;
         }
 
         public void RefreshData()
@@ -31,10 +35,13 @@ namespace MacroMan
             dataTable.RowChanged += DataTable_RowChanged;
             databaseGridView.DataSource = dataTable;
         }
-        public void SetupData(Func<DataTable> _getDataTable, Action<int, object, object> _setDataValue)
+        public void SetupData(Func<DataTable> _getDataTable, Action<int, object, object> _setDataValue, Action<string> _exportValues, Action<string> _importValues, Func<string> _getExt)
         {
             getDataTable = _getDataTable;
             setDataValue = _setDataValue;
+            exportValues = _exportValues;
+            importValues = _importValues;
+            getExt = _getExt;
 
             RefreshData();
         }
@@ -69,6 +76,53 @@ namespace MacroMan
         private void databaseGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             //UpdateRowInDatabase(e.RowIndex); //I want to add this since sometimes clicking outside of a cell doesn't apply changes, but it happens with new rows and because of that it would cause an error since the row doesn't exist yet
+        }
+
+        private SaveFileDialog DefaultSaveDialog()
+        {
+            var saveDialog = new SaveFileDialog();
+            var ext = getExt();
+            saveDialog.Filter = "Database file (*." + ext + ")|*." + ext + "|All files (*.*)|*.*";
+            saveDialog.AddExtension = true;
+            saveDialog.CheckPathExists = true;
+            string initialDirectory = Environment.CurrentDirectory;
+            saveDialog.InitialDirectory = initialDirectory;
+            return saveDialog;
+        }
+        private OpenFileDialog DefaultOpenDialog()
+        {
+            var openDialog = new OpenFileDialog();
+            var ext = getExt();
+            openDialog.Filter = "Database file (*." + ext + ")|*." + ext + "|All files (*.*)|*.*";
+            openDialog.AddExtension = true;
+            openDialog.CheckPathExists = true;
+            openDialog.CheckFileExists = true;
+            string initialDirectory = Environment.CurrentDirectory;
+            openDialog.InitialDirectory = initialDirectory;
+            return openDialog;
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var openDialog = DefaultOpenDialog();
+            var result = openDialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                importValues(openDialog.FileName);
+                RefreshData();
+            }
+        }
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataTable.Rows.Count > 0)
+            {
+                var saveDialog = DefaultSaveDialog();
+                var result = saveDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                    exportValues(saveDialog.FileName);
+            }
+            else
+                MessageBox.Show("Cannot save an empty database", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void refreshButton_Click(object sender, EventArgs e)

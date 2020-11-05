@@ -93,6 +93,8 @@
             // 
             // sequenceFrameDelayInfoLabel
             // 
+            this.sequenceFrameDelayInfoLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.sequenceFrameDelayInfoLabel.Location = new System.Drawing.Point(141, 80);
             this.sequenceFrameDelayInfoLabel.Name = "sequenceFrameDelayInfoLabel";
             this.sequenceFrameDelayInfoLabel.Size = new System.Drawing.Size(120, 194);

@@ -50,14 +50,14 @@ namespace MacroMan.MacroActions
             return name;
         }
 
-        public static void SaveCacheTo(string loc)
+        public static void SaveSequenceTo(string loc, MacroType[] sequence)
         {
             var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
             using (var fs = new System.IO.FileStream(loc, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.ReadWrite, System.IO.FileShare.None))
             using (var ms = new System.IO.MemoryStream())
             using (var sw = new System.IO.StreamWriter(fs))
             {
-                bf.Serialize(ms, cachedMacros);
+                bf.Serialize(ms, sequence);
                 fs.SetLength(0);
                 ms.Position = 0;
                 ms.CopyTo(fs);
@@ -68,7 +68,7 @@ namespace MacroMan.MacroActions
             var bf = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
             using (var fs = new System.IO.FileStream(loc, System.IO.FileMode.Open, System.IO.FileAccess.Read))
             {
-                cachedMacros = (List<MacroType>)bf.Deserialize(fs);
+                cachedMacros = new List<MacroType>((MacroType[])bf.Deserialize(fs));
             }
 
             totalId = cachedMacros.Max(macro => macro.uniqueId) + 1;
