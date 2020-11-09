@@ -46,10 +46,10 @@ namespace MacroMan
             RefreshData();
         }
 
-        private void UpdateRowInDatabase(int integerId)
+        private void UpdateRowInDatabase(int valueId)
         {
-            if (integerId >= 0)
-                setDataValue(integerId, dataTable.Rows[integerId][2], dataTable.Rows[integerId][1]);
+            if (valueId >= 0)
+                setDataValue(valueId, dataTable.Rows[valueId][2], dataTable.Rows[valueId][1]);
         }
         private void DataTable_RowChanged(object sender, DataRowChangeEventArgs e)
         {

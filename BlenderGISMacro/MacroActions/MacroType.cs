@@ -135,14 +135,17 @@ namespace MacroMan.MacroActions
                     await startCondition.Execute(cancelToken);
                     execute = (int)startCondition.GetProperty("result_value").value != 0;
                 }
-                
+
+                MacroType nextMacro = null;
                 if (execute)
+                {
                     await macro.Execute(cancelToken);
+                    int nextMacroId = macro.nextMacroId;
+                    nextMacro = GetMacro(nextMacroId);
+                }
 
                 await Task.Delay(sequencePlayDelay, cancelToken);
 
-                int nextMacroId = macro.nextMacroId;
-                var nextMacro = GetMacro(nextMacroId);
                 if (nextMacro != null)
                     i = Array.IndexOf(sequence, nextMacro) - 1;
             }
@@ -165,6 +168,8 @@ namespace MacroMan.MacroActions
                 macroType = Macro.Boolean;
             else if (macro is ClipboardMacro)
                 macroType = Macro.Clipboard;
+            else if (macro is StringMacro)
+                macroType = Macro.String;
 
             return macroType;
         }
@@ -214,6 +219,12 @@ namespace MacroMan.MacroActions
                         macro = new ClipboardMacro(toClone);
                     else
                         macro = new ClipboardMacro();
+                    break;
+                case Macro.String:
+                    if (toClone != null)
+                        macro = new StringMacro(toClone);
+                    else
+                        macro = new StringMacro();
                     break;
             }
             return macro;

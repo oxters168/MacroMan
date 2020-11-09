@@ -7,6 +7,7 @@
         Integer,
         Keyboard,
         Mouse,
+        String,
         Time,
         Window,
     }

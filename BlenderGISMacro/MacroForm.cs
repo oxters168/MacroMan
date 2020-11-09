@@ -111,7 +111,7 @@ namespace MacroMan
             MacroProperty prop = faux.GetProperty(propertyId);
 
             string propStart = GetCurrentPropertyPointerStart();
-            return (fauxType == Macro.Boolean || fauxType == Macro.Integer || fauxType == Macro.Clipboard) && prop.name.Contains(propStart + "_source_") && (DataSource)faux.GetProperty(propStart + "_source").value == DataSource.Macro;
+            return (fauxType == Macro.Boolean || fauxType == Macro.Integer || fauxType == Macro.Clipboard || fauxType == Macro.String) && prop.name.Contains(propStart + "_source_") && (DataSource)faux.GetProperty(propStart + "_source").value == DataSource.Macro;
         }
         private bool IsCurrentPropertyMacroId()
         {

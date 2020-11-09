@@ -20,6 +20,10 @@ namespace MacroMan.MacroActions
             button_down = 2,
             button_up = 3,
             get_pos = 4,
+            scroll_up = 5,
+            scroll_down = 6,
+            scroll_left = 7,
+            scroll_right = 8,
             //get_pressed = 5,
         }
         /// <summary>
@@ -146,42 +150,74 @@ namespace MacroMan.MacroActions
             try
             {
                 MouseButton button = (MouseButton)GetProperty((int)MouseProperties.button).value;
-                MouseOperations.MouseEventFlags downEvent, upEvent;
-                if (button == MouseButton.left)
-                {
-                    downEvent = MouseOperations.MouseEventFlags.LeftDown;
-                    upEvent = MouseOperations.MouseEventFlags.LeftUp;
-                }
-                else if (button == MouseButton.right)
-                {
-                    downEvent = MouseOperations.MouseEventFlags.RightDown;
-                    upEvent = MouseOperations.MouseEventFlags.RightUp;
-                }
-                else
-                {
-                    downEvent = MouseOperations.MouseEventFlags.MiddleDown;
-                    upEvent = MouseOperations.MouseEventFlags.MiddleUp;
-                }
 
                 switch (executedAction)
                 {
                     case MouseAction.set_pos:
                         MouseOperations.SetCursorPosition((int)GetProperty((int)MouseProperties.x_pos).value, (int)GetProperty((int)MouseProperties.y_pos).value);
+                        //MouseOperations.SetPosition((int)GetProperty((int)MouseProperties.x_pos).value, (int)GetProperty((int)MouseProperties.y_pos).value);
                         break;
                     case MouseAction.button_click:
-                        MouseOperations.MouseEvent(downEvent);
-                        MouseOperations.MouseEvent(upEvent);
+                        switch (button)
+                        {
+                            case MouseButton.left:
+                                MouseOperations.LeftButtonDown();
+                                MouseOperations.LeftButtonUp();
+                                break;
+                            case MouseButton.right:
+                                MouseOperations.RightButtonDown();
+                                MouseOperations.RightButtonUp();
+                                break;
+                            case MouseButton.middle:
+                                MouseOperations.MiddleButtonDown();
+                                MouseOperations.MiddleButtonUp();
+                                break;
+                        }
                         break;
                     case MouseAction.button_down:
-                        MouseOperations.MouseEvent(downEvent);
+                        switch (button)
+                        {
+                            case MouseButton.left:
+                                MouseOperations.LeftButtonDown();
+                                break;
+                            case MouseButton.right:
+                                MouseOperations.RightButtonDown();
+                                break;
+                            case MouseButton.middle:
+                                MouseOperations.MiddleButtonDown();
+                                break;
+                        }
                         break;
                     case MouseAction.button_up:
-                        MouseOperations.MouseEvent(upEvent);
+                        switch (button)
+                        {
+                            case MouseButton.left:
+                                MouseOperations.LeftButtonUp();
+                                break;
+                            case MouseButton.right:
+                                MouseOperations.RightButtonUp();
+                                break;
+                            case MouseButton.middle:
+                                MouseOperations.MiddleButtonUp();
+                                break;
+                        }
                         break;
                     case MouseAction.get_pos:
                         var pos = MouseOperations.GetCursorPosition();
                         SetPropertyValue((int)MouseProperties.x_pos, pos.X);
                         SetPropertyValue((int)MouseProperties.y_pos, pos.Y);
+                        break;
+                    case MouseAction.scroll_down:
+                        MouseOperations.ScrollDown();
+                        break;
+                    case MouseAction.scroll_up:
+                        MouseOperations.ScrollUp();
+                        break;
+                    case MouseAction.scroll_left:
+                        MouseOperations.ScrollLeft();
+                        break;
+                    case MouseAction.scroll_right:
+                        MouseOperations.ScrollRight();
                         break;
                 }
             }

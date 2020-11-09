@@ -249,8 +249,8 @@ namespace MacroMan.MacroActions
                 int resultSourceMacroId = (int)GetProperty((int)BooleanProperties.result_source_macro_id).value;
 
                 MacroType firstMacroSource = GetMacro(firstSourceMacroId);
-                MacroType secondMacroSource = GetMacro(firstSourceMacroId);
-                MacroType resultMacroSource = GetMacro(firstSourceMacroId);
+                MacroType secondMacroSource = GetMacro(secondSourceMacroId);
+                MacroType resultMacroSource = GetMacro(resultSourceMacroId);
 
                 IComparable firstValue = 0;
                 if ((firstSource & DataSource.Self) != 0)

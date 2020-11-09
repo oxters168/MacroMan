@@ -8,18 +8,7 @@ namespace MacroMan
     /// </summary>
     public static class MouseOperations
     {
-        [Flags]
-        public enum MouseEventFlags
-        {
-            LeftDown = 0x00000002,
-            LeftUp = 0x00000004,
-            MiddleDown = 0x00000020,
-            MiddleUp = 0x00000040,
-            Move = 0x00000001,
-            Absolute = 0x00008000,
-            RightDown = 0x00000008,
-            RightUp = 0x00000010
-        }
+        private const int WHEEL_DELTA = 120;
 
         public static void SetCursorPosition(int x, int y)
         {
@@ -39,12 +28,62 @@ namespace MacroMan
                 currentMousePoint = new MousePoint(0, 0);
             return currentMousePoint;
         }
-
-        public static void MouseEvent(MouseEventFlags value)
+        public static void LeftButtonDown()
+        {
+            MouseEvent(MouseEventF.LEFTDOWN);
+        }
+        public static void LeftButtonUp()
+        {
+            MouseEvent(MouseEventF.LEFTUP);
+        }
+        public static void RightButtonDown()
+        {
+            MouseEvent(MouseEventF.RIGHTDOWN);
+        }
+        public static void RightButtonUp()
+        {
+            MouseEvent(MouseEventF.RIGHTUP);
+        }
+        public static void MiddleButtonDown()
+        {
+            MouseEvent(MouseEventF.MIDDLEDOWN);
+        }
+        public static void MiddleButtonUp()
+        {
+            MouseEvent(MouseEventF.MIDDLEUP);
+        }
+        public static void ScrollUp()
+        {
+            MouseEvent(MouseEventF.WHEEL, WHEEL_DELTA);
+        }
+        public static void ScrollDown()
+        {
+            MouseEvent(MouseEventF.WHEEL, -WHEEL_DELTA);
+        }
+        public static void ScrollLeft()
+        {
+            MouseEvent(MouseEventF.HWHEEL, -WHEEL_DELTA);
+        }
+        public static void ScrollRight()
+        {
+            MouseEvent(MouseEventF.HWHEEL, WHEEL_DELTA);
+        }
+        public static void SetPosition(int x, int y)
         {
             MousePoint position = GetCursorPosition();
-            ExternAPI.mouse_event((int)value, position.X, position.Y, 0, 0);
+            MouseEvent(MouseEventF.MOVE, x - position.X, y - position.Y);
         }
+
+        private static void MouseEvent(MouseEventF value, int dwData = 0)
+        {
+            MousePoint position = GetCursorPosition();
+            MouseEvent(value, position.X, position.Y, dwData);
+        }
+        private static void MouseEvent(MouseEventF value, int x, int y, int dwData = 0)
+        {
+            ExternAPI.mouse_event((int)value, x, y, (int)(uint)dwData, 0);
+        }
+
 
         [StructLayout(LayoutKind.Sequential)]
         public struct MousePoint
